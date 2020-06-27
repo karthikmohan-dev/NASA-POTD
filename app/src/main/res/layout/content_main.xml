@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentTop="true"
+    android:id="@+id/content_layout"
+    android:background="@color/colorPrimaryDark"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_main">
+
+    <com.jsibbold.zoomage.ZoomageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        app:zoomage_restrictBounds="false"
+        app:zoomage_animateOnReset="true"
+        app:zoomage_autoResetMode="UNDER"
+        app:zoomage_autoCenter="false"
+        app:zoomage_zoomable="false"
+        app:zoomage_translatable="false"
+        app:zoomage_minScale="0.6"
+        app:zoomage_maxScale="8" />
+
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/blurView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:background="@drawable/rounded_corner"
+        app:blurOverlayColor="@color/colorOverlay">
+
+    <LinearLayout
+        android:id="@+id/linearLayout_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:layout_marginTop="2dp"
+            app:layout_anchor="@+id/linearLayout"
+            android:gravity="center_horizontal"
+            android:textAlignment="center"
+            android:text="@string/nasa_photo_of_the_day_text"
+            android:textColor="#000000"
+            android:textSize="24sp"/>
+
+        <TextView
+            android:id="@+id/date_view"
+            android:textSize="18sp"
+            android:textStyle="italic"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal" />
+
+    </LinearLayout>
+    </eightbitlab.com.blurview.BlurView>
+
+</RelativeLayout>

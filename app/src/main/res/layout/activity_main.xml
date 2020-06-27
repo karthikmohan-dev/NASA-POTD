@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.nasapotd.MainActivity">
+
+    <include layout="@layout/content_main"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/calendar_1"
+        android:id="@+id/fab_calendar"
+        app:useCompatPadding="true"
+        app:maxImageSize="32dp"
+        app:layout_anchor="@+id/blurView"
+        app:layout_anchorGravity="bottom|end"
+        tools:targetApi="lollipop" />
+
+    <include layout="@layout/bottom_sheet" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        app:maxImageSize="30dp"
+        app:useCompatPadding="true"
+        android:src="@drawable/zoom_on"
+        android:id="@+id/fab_lens"
+        app:layout_anchor="@+id/bottom_sheet"
+        app:layout_anchorGravity="top|end"
+        tools:targetApi="lollipop" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#0099cc"
+    tools:context="com.example.nasapotd.VideoActivity1">
+
+    <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+        android:id="@+id/youtube_player_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:autoPlay="false"
+        app:showSeekBar="true"
+        app:showYouTubeButton="false"
+        app:enableAutomaticInitialization="true"
+        app:showFullScreenButton="false" />
+
+    <ImageButton
+        android:id="@+id/exit_button"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_margin="15dp"
+        android:background="@drawable/logout"
+        android:layout_gravity="top|end"
+        android:contentDescription="@string/exit_string" />
+</FrameLayout>
