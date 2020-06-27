@@ -361,7 +361,7 @@ class MainActivity : AppCompatActivity() {
                             Log.e("URL is->", "" + id)
                             videoId = id
                             when {
-                                data.url!!.contains("yout") -> {
+                                data.url!!.contains("youtu") -> {
                                     Log.e("YT", "true")
                                     imgUrl = "http://img.youtube.com/vi/$id/0.jpg"
                                     flagCheck = 1
@@ -481,10 +481,7 @@ class MainActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val request = retrofit.create(DataApi::class.java)
-        val call1: Call<List<VimeoModel>> =
-            request._feed_thumbnail
-        //dialog = ProgressDialog.show(MainActivity.this, "", "Loading Thumbnail. Please wait...", true);
-        call1.enqueue(object : Callback<List<VimeoModel>?> {
+        request.get_feed_thumbnail()?.enqueue(object : Callback<List<VimeoModel>?> {
             override fun onResponse(
                 call: Call<List<VimeoModel>?>,
                 response: Response<List<VimeoModel>?>
@@ -493,7 +490,6 @@ class MainActivity : AppCompatActivity() {
                     vimeoImg = response.body()!![0].thumbnail_large
                     videoThumbnailLoader(vimeoImg!!)
                 }
-                //Log.e("TAG", vimeo_img)
             }
 
             override fun onFailure(
