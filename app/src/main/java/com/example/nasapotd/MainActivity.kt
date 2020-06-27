@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN, BottomSheetBehavior.STATE_DRAGGING, BottomSheetBehavior.STATE_SETTLING, BottomSheetBehavior.STATE_HALF_EXPANDED -> {
                     }
-                    BottomSheetBehavior.STATE_EXPANDED -> fab_calendar.visibility = View.GONE
+                    BottomSheetBehavior.STATE_EXPANDED -> fab_calendar.visibility = View.INVISIBLE
                     BottomSheetBehavior.STATE_COLLAPSED -> {
                         fab_calendar.visibility = View.VISIBLE
                         mScrollView.smoothScrollTo(0, description.top)
