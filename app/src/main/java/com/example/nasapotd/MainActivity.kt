@@ -265,9 +265,9 @@ class MainActivity : AppCompatActivity() {
         val service: DataApi = retrofit.create(DataApi::class.java)
         //first run
         call = if (flag == 0) {
-            service.get_feed(DataApi.api_key)
+            service.getFeed(DataApi.api_key)
         } else {
-            service.get_feed_with_date(DataApi.api_key, dateChosen)
+            service.getFeedWithDate(DataApi.api_key, dateChosen)
         }
         dialog = if (flag == 9999) ProgressDialog.show(
             this@MainActivity,
@@ -481,7 +481,7 @@ class MainActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val request = retrofit.create(DataApi::class.java)
-        request.get_feed_thumbnail()?.enqueue(object : Callback<List<VimeoModel>?> {
+        request.getFeedThumbnail()?.enqueue(object : Callback<List<VimeoModel>?> {
             override fun onResponse(
                 call: Call<List<VimeoModel>?>,
                 response: Response<List<VimeoModel>?>

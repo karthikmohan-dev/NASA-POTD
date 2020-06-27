@@ -8,16 +8,16 @@ import retrofit2.http.Query
 
 interface DataApi {
     @GET("apod")
-    fun get_feed(@Query("api_key") api_key: String?): Call<DataModel>?
+    fun getFeed(@Query("api_key") api_key: String?): Call<DataModel>?
 
     @GET("apod")
-    fun get_feed_with_date(
+    fun getFeedWithDate(
         @Query("api_key") api_key: String?,
         @Query("date") date: String?
     ): Call<DataModel>?
 
     @GET(".")
-    fun get_feed_thumbnail(): Call<List<VimeoModel>>?
+    fun getFeedThumbnail(): Call<List<VimeoModel>>?
 
     companion object {
         const val api_key = "hhLOEStXTcfad68lAeqOkEoVqhzNhTCyaPp5kaaO"
