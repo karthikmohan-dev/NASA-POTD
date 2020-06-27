@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/calendar_1"
+        android:src="@drawable/calendar_icon"
         android:id="@+id/fab_calendar"
         app:useCompatPadding="true"
         app:maxImageSize="32dp"
