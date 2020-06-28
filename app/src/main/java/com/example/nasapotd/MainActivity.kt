@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION")
+@file:Suppress("DEPRECATION", "NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 
 package com.example.nasapotd
 
@@ -41,6 +41,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.text.DateFormat
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
@@ -58,12 +61,19 @@ class MainActivity : AppCompatActivity() {
     var sheetBehavior: BottomSheetBehavior<*>? = null
     private var videoId: String? = null
     private var mediaType: String? = null
-    private var maxDate: String? = null
     private var flagCheck = 0
     private var i: Intent? = null
     var vimeoImg: String? = null
     private var imgUrl: String? = null
     private var vidUrl: String? = null
+    private var userchosenyear = 0
+    private  var userchosenmonth:Int = 0
+    private  var userchosenday:Int = 0
+    private var currDay = 0
+    private  var currYear:Int = 0
+    private  var currMonth:Int = 0
+    private var maxDate1: String? = null
+    private var displayDate: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,7 +147,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity, "Pick Date", Toast.LENGTH_SHORT).show()
             true
         }
-        fab_calendar.setOnClickListener { datepicker() }
+        fab_calendar.setOnClickListener { datePicker() }
         content_layout.setOnClickListener {
             if ((sheetBehavior as BottomSheetBehavior<*>).state == BottomSheetBehavior.STATE_EXPANDED) {
                 (sheetBehavior as BottomSheetBehavior<*>).state = BottomSheetBehavior.STATE_COLLAPSED
@@ -222,33 +232,59 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun datepicker() {
+    private fun datePicker() {
         val c = Calendar.getInstance()
-        //Current Date
-        val curryear = c[Calendar.YEAR]
-        val currmonth = c[Calendar.MONTH]
-        val currday = c[Calendar.DAY_OF_MONTH]
+        if (userchosenyear != 0 && userchosenmonth != 0 && userchosenday != 0) {
+            currYear = userchosenyear
+            currMonth = userchosenmonth - 1
+            currDay = userchosenday
+        } else {
+            //Current Date
+            currYear = c[Calendar.YEAR]
+            currMonth = c[Calendar.MONTH]
+            currDay = c[Calendar.DAY_OF_MONTH]
+        }
         val dialog = DatePickerDialog(
             this,
             DatePickerDialog.OnDateSetListener { _: DatePicker?, year1: Int, month1: Int, day_of_month: Int ->
                 dateChosen = "" + year1 + "-" + (month1 + 1) + "-" + day_of_month
                 Log.e(dateChosen, "Check")
-                fetchData()
+                Log.e(displayDate, "Check")
+                userchosenyear = year1
+                userchosenmonth = month1 + 1
+                userchosenday = day_of_month
+                val format: DateFormat =
+                    SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                try {
+                    val date = format.parse(dateChosen)
+                    var finalPickedDate: String? = null
+                    if (date != null) {
+                        finalPickedDate = format.format(date)
+                    }
+                    if (displayDate != finalPickedDate) fetchData()
+                } catch (e: ParseException) {
+                    e.printStackTrace()
+                }
             },
-            curryear,
-            currmonth,
-            currday
+            currYear,
+            currMonth,
+            currDay
         )
+        if (userchosenyear != 0 && userchosenmonth != 0 && userchosenday != 0) dialog.datePicker
+            .init(
+                currYear, currMonth, currDay
+            ) { _, _, _, _ -> }
+
         //Min Date
         c[1995, 5] = 16
         dialog.datePicker.minDate = c.timeInMillis
         //Max Date
-        if (maxDate != null) {
-            val items1 = maxDate!!.split("-".toRegex()).toTypedArray()
-            val maxyear = items1[0].toInt()
-            val maxmonth = items1[1].toInt()
-            val maxday = items1[2].toInt()
-            c[maxyear, maxmonth - 1] = maxday
+        if (maxDate1 != null) {
+            val items1: Array<String> = maxDate1!!.split("-".toRegex()).toTypedArray()
+            val maxYear = items1[0].toInt()
+            val maxMonth = items1[1].toInt()
+            val maxDay = items1[2].toInt()
+            c[maxYear, maxMonth - 1] = maxDay
             dialog.datePicker.maxDate = c.timeInMillis
         } else {
             val today = System.currentTimeMillis() - 1000
@@ -283,11 +319,12 @@ class MainActivity : AppCompatActivity() {
                 val data: DataModel? = response.body()
                 if (flag == 0) {
                     if (data != null) {
-                        maxDate = data.date
+                        maxDate1 = data.date
                         flag++
                     }
                 }
                 if (data != null) {
+                    displayDate = data.date
                     if (data.media_type.equals("image")) {
                         mediaType = data.media_type
                         sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
