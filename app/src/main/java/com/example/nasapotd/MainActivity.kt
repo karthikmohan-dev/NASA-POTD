@@ -78,6 +78,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        if (!isTaskRoot
+            && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
+            && intent.action != null
+            && intent.action.equals(Intent.ACTION_MAIN)) {
+
+            finish()
+            return
+        }
+
         initCustom()
         imageLoader.init(ImageLoaderConfiguration.createDefault(this))
         initoptions()
@@ -557,5 +567,4 @@ class MainActivity : AppCompatActivity() {
                 .postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         }
     }
-
 }
