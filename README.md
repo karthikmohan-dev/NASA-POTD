@@ -6,6 +6,10 @@
         <img src="https://img.shields.io/github/contributors/karthikmohan/NASA-POTD?style=for-the-badge" alt="Contributors"/></a>
     <a href="https://github.com/karthikmohan/NASA-POTD/releases" alt="Release">
         <img src="https://img.shields.io/github/release-date/karthikmohan/NASA-POTD?style=for-the-badge" alt="Release"/></a> 
+     <a href="https://github.com/karthikmohan/NASA-POTD/commits" alt="Commit Activity">
+        <img src="https://img.shields.io/github/commit-activity/m/karthikmohan/NASA-POTD?style=for-the-badge" alt="Commit Activity"/></a> 
+    <a href="https://karthikmohan.github.io/NASA-POTD/" alt="Github Page">
+        <img src="https://img.shields.io/website?down_color=red&down_message=offline&style=for-the-badge&up_color=green&up_message=online&url=https%3A%2F%2Fkarthikmohan.github.io%2FNASA-POTD%2F" alt="Github Page"/></a> 
 </p>  
 
 # NASA-POTD
