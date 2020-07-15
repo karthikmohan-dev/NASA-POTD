@@ -1,7 +1,10 @@
 </p>
-<p align="center">
+<p align="left">
     <a href="https://github.com/karthikmohan/NASA-POTD/issues" alt="Issues">
-        <img src="https://img.shields.io/github/issues/karthikmohan/NASA-POTD?style=for-the-badge" alt="issues"/></a>
+        <img src="https://img.shields.io/github/issues/karthikmohan/NASA-POTD?style=for-the-badge" alt="Issues"/></a>
+    <a href="https://github.com/karthikmohan/NASA-POTD/issues" alt="Contributors">
+        <img src="https://img.shields.io/github/contributors/karthikmohan/NASA-POTD" alt="Contributors"/></a>
+    
 </p>  
 
 # NASA-POTD
