@@ -1,3 +1,9 @@
+</p>
+<p align="center">
+    <a href="https://github.com/karthikmohan/NASA-POTD/issues" alt="Issues">
+        <img src="https://img.shields.io/github/issues/karthikmohan/NASA-POTD?style=for-the-badge" alt="issues"/></a>
+</p>  
+
 # NASA-POTD
 NASA-POTD is an Android app that displays NASA's Astronomical Picture of the Day. 
 This app lets you explore the cosmos with NASA's Astronomy Picture of the Day (APOD) service. NASA publishes a new image or video everyday related to astronomy for APOD, along with comprehensive documentation about the featured image.
