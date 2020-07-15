@@ -31,4 +31,3 @@ Note: The Astronomy Picture of the Day (APOD) is based upon work supported by NA
 * Downloading/Sharing the pictures.
 * Setting as Wallpaper
 * More Intuitive UI
-
