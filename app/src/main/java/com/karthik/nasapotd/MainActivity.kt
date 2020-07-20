@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     private var dateChosen: String? = null
     private var call: Call<DataModel>? = null
     var flag = 0
-//    var ad_check = 0
+    private var adCheck = 0
     var imageToDiplay: String? = null
     var sheetBehavior: BottomSheetBehavior<*>? = null
     private var videoId: String? = null
@@ -86,7 +86,9 @@ class MainActivity : AppCompatActivity() {
 
         MobileAds.initialize(this) {}
         val mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = "ca-app-pub-2747296886141297/7705354849"
+        //mInterstitialAd.adUnitId = "ca-app-pub-2747296886141297/7705354849"
+        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        mInterstitialAd.loadAd(AdRequest.Builder().build())
 
         if (!isTaskRoot
             && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
@@ -130,10 +132,11 @@ class MainActivity : AppCompatActivity() {
 
         mInterstitialAd.adListener = object: AdListener() {
             override fun onAdLoaded() {
-                mInterstitialAd.show()
+                //mInterstitialAd.show()
             }
 
             override fun onAdFailedToLoad(errorCode: Int) {
+                Log.e("TAG", "AD Not Working")
                 initchooser()
             }
 
@@ -143,6 +146,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onAdClosed() {
                 initchooser()
+                mInterstitialAd.loadAd(AdRequest.Builder().build())
             }
         }
 
@@ -160,12 +164,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         fab_lens.setOnClickListener {
-//            if (mInterstitialAd.isLoaded) {
-//                mInterstitialAd.show()
-//            } else {
-//                initchooser()
-//            }
-            mInterstitialAd.loadAd(AdRequest.Builder().build())
+            if (mInterstitialAd.isLoaded && adCheck==0) {
+                mInterstitialAd.show()
+            } else {
+                initchooser()
+            }
 
         }
         fab_calendar.setOnLongClickListener {
@@ -203,7 +206,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         } else {
-            if ((sheetBehavior as BottomSheetBehavior<*>).state == BottomSheetBehavior.STATE_HIDDEN) { backToNormalFunc()} else if ((sheetBehavior as BottomSheetBehavior<*>).state == BottomSheetBehavior.STATE_COLLAPSED || (sheetBehavior as BottomSheetBehavior<*>).state == BottomSheetBehavior.STATE_EXPANDED) {fullScreenFunc();}
+            if ((sheetBehavior as BottomSheetBehavior<*>).state == BottomSheetBehavior.STATE_HIDDEN) { backToNormalFunc(); adCheck = 0} else if ((sheetBehavior as BottomSheetBehavior<*>).state == BottomSheetBehavior.STATE_COLLAPSED || (sheetBehavior as BottomSheetBehavior<*>).state == BottomSheetBehavior.STATE_EXPANDED) {fullScreenFunc(); adCheck = 1}
         }
     }
 
@@ -596,6 +599,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (sheetBehavior!!.state == BottomSheetBehavior.STATE_HIDDEN || sheetBehavior!!.state == BottomSheetBehavior.STATE_EXPANDED) {
             backToNormalFunc()
+            adCheck = 0
         } else {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed()
