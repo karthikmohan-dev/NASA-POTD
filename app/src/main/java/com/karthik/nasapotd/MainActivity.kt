@@ -86,8 +86,7 @@ class MainActivity : AppCompatActivity() {
 
         MobileAds.initialize(this) {}
         val mInterstitialAd = InterstitialAd(this)
-        //mInterstitialAd.adUnitId = "ca-app-pub-2747296886141297/7705354849"
-        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        mInterstitialAd.adUnitId = "ca-app-pub-2747296886141297/7705354849"
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
         if (!isTaskRoot
@@ -141,7 +140,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onAdClicked() {
-                initchooser()
+//                onAdClosed()
+//                initchooser()
             }
 
             override fun onAdClosed() {

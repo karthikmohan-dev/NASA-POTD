@@ -10,8 +10,8 @@ android {
         applicationId "com.karthik.nasapotd"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -65,5 +65,5 @@ dependencies {
     implementation 'com.ct7ct7ct7.androidvimeoplayer:library:1.0.6'
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
     implementation 'com.google.android.gms:play-services-ads:19.2.0'
-
+    implementation "androidx.cardview:cardview:1.0.0"
 }

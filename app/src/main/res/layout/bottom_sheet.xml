@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/colorPrimary"
+    app:cardCornerRadius="10dp"
     android:background="@color/colorPrimary"
-    android:orientation="vertical"
-    android:padding="16dp"
+    app:cardElevation="5dp"
+    android:maxHeight="500dp"
+    app:cardUseCompatPadding="true"
+    android:id="@+id/bottom_sheet"
     app:behavior_hideable="true"
     app:behavior_peekHeight="120dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     tools:targetApi="lollipop">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical"
+    android:id="@+id/bottom_sheet1"
+    android:padding="16dp">
 
         <TextView
             android:layout_width="match_parent"
@@ -44,3 +56,4 @@
     </ScrollView>
 
 </LinearLayout>
+</androidx.cardview.widget.CardView>

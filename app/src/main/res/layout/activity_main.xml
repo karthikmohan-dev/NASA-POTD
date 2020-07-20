@@ -20,7 +20,7 @@
         app:layout_anchorGravity="bottom|end"
         tools:targetApi="lollipop" />
 
-    <include layout="@layout/bottom_sheet" />
+    <include layout="@layout/bottom_sheet"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
@@ -30,7 +30,7 @@
         app:useCompatPadding="true"
         android:src="@drawable/zoom_on"
         android:id="@+id/fab_lens"
-        app:layout_anchor="@+id/bottom_sheet"
+        app:layout_anchor="@+id/bottom_sheet1"
         app:layout_anchorGravity="top|end"
         tools:targetApi="lollipop" />
 

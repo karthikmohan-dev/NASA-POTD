@@ -10,13 +10,13 @@
 <!--        android:color="#de3d3d" />-->
 
     // The desired corner radius. reduce it to keep it less rounded
-    <corners android:radius="360dp" />
+    <corners android:radius="300dp" />
 
     // Add your desired padding
     <padding
-        android:left="20dp"
+        android:left="18dp"
         android:top="10dp"
-        android:right="20dp"
+        android:right="18dp"
         android:bottom="10dp"    >
     </padding>
 
