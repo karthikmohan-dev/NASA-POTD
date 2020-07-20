@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#0099cc"
-    tools:context="com.example.nasapotd.VideoActivity1">
+    tools:context="com.karthik.nasapotd.VideoActivity1">
 
     <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
         android:id="@+id/youtube_player_view"
