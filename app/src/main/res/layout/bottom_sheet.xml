@@ -9,7 +9,6 @@
     app:cardCornerRadius="10dp"
     android:background="@color/colorPrimary"
     app:cardElevation="5dp"
-    android:maxHeight="500dp"
     app:cardUseCompatPadding="true"
     android:id="@+id/bottom_sheet"
     app:behavior_hideable="true"
@@ -22,7 +21,6 @@
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
     android:orientation="vertical"
-    android:id="@+id/bottom_sheet1"
     android:padding="16dp">
 
         <TextView

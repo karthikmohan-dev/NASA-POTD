@@ -86,7 +86,13 @@ class MainActivity : AppCompatActivity() {
 
         MobileAds.initialize(this) {}
         val mInterstitialAd = InterstitialAd(this)
+
+        //Test AD
+        //mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+
+        //Personallized AD
         mInterstitialAd.adUnitId = "ca-app-pub-2747296886141297/7705354849"
+
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
         if (!isTaskRoot
@@ -167,6 +173,7 @@ class MainActivity : AppCompatActivity() {
             if (mInterstitialAd.isLoaded && adCheck==0) {
                 mInterstitialAd.show()
             } else {
+                Log.d("TAG", "The interstitial wasn't loaded yet.")
                 initchooser()
             }
 

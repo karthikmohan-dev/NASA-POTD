@@ -30,7 +30,7 @@
         app:useCompatPadding="true"
         android:src="@drawable/zoom_on"
         android:id="@+id/fab_lens"
-        app:layout_anchor="@+id/bottom_sheet1"
+        app:layout_anchor="@+id/bottom_sheet"
         app:layout_anchorGravity="top|end"
         tools:targetApi="lollipop" />
 
