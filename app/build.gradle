@@ -24,7 +24,6 @@ android {
                     'proguard-rules.pro'
 //            minifyEnabled false
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            1
         }
     }
     compileOptions {
