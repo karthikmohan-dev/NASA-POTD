@@ -214,6 +214,7 @@ class MainActivity : AppCompatActivity() {
             override fun onAdFailedToLoad(errorCode: Int) {
                 Log.e("TAG", "AD Not Working")
                 initchooser()
+                mInterstitialAd.loadAd(AdRequest.Builder().build())
             }
 
             override fun onAdClicked() {
