@@ -151,10 +151,10 @@ class MainActivity : AppCompatActivity() {
         val mInterstitialAd = InterstitialAd(this)
 
         //Test AD
-        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        //mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
 
         //Personallized AD
-        //mInterstitialAd.adUnitId = "ca-app-pub-2747296886141297/7705354849"
+        mInterstitialAd.adUnitId = "ca-app-pub-2747296886141297/7705354849"
 
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
