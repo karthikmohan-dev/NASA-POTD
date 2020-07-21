@@ -156,8 +156,6 @@ class MainActivity : AppCompatActivity() {
         //Personallized AD
         mInterstitialAd.adUnitId = "ca-app-pub-2747296886141297/7705354849"
 
-        mInterstitialAd.loadAd(AdRequest.Builder().build())
-
         if (!isTaskRoot
             && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
             && intent.action != null
@@ -214,7 +212,6 @@ class MainActivity : AppCompatActivity() {
             override fun onAdFailedToLoad(errorCode: Int) {
                 Log.e("TAG", "AD Not Working")
                 initchooser()
-                mInterstitialAd.loadAd(AdRequest.Builder().build())
             }
 
             override fun onAdClicked() {
@@ -247,6 +244,10 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Log.d("TAG", "The interstitial wasn't loaded yet.")
                 initchooser()
+            }
+            if(!mInterstitialAd.isLoaded)
+            {
+                mInterstitialAd.loadAd(AdRequest.Builder().build())
             }
 
         }
