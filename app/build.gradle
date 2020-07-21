@@ -68,4 +68,6 @@ dependencies {
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
     implementation 'com.google.android.gms:play-services-ads:19.2.0'
     implementation "androidx.cardview:cardview:1.0.0"
+    implementation "com.squareup.okhttp3:okhttp:4.8.0"
+    implementation 'com.github.florent37:tutoshowcase:1.0.1'
 }

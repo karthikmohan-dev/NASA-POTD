@@ -2,24 +2,28 @@
 
 package com.karthik.nasapotd
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.util.Log
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewOutlineProvider
-import android.view.WindowManager
+import android.view.*
 import android.widget.DatePicker
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.github.florent37.tutoshowcase.TutoShowcase
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
@@ -40,6 +44,8 @@ import eightbitlab.com.blurview.RenderScriptBlur
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import kotlinx.android.synthetic.main.content_main.*
+import okhttp3.Cache
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -49,6 +55,7 @@ import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity() {
@@ -83,30 +90,92 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        if (hasNetwork(this)!!) {
+            init()
+            initblur()
+            initoptions()
+            fetchData()
+            initswipe()
+        }
+        else
+        {
+            Toast.makeText(this@MainActivity, getString(R.string.no_network), Toast.LENGTH_SHORT).show()
+        }
+    }
 
+
+    private fun initshowcase() {
+        TutoShowcase.from(this)
+            .setContentView(R.layout.tutorial_left)
+            .setListener {
+                TutoShowcase.from(this)
+                .setContentView(R.layout.tutorial_right)
+                    .setListener {
+                        TutoShowcase.from(this)
+                            .setContentView(R.layout.tutorial_center_1)
+                            .setListener {
+                                TutoShowcase.from(this)
+                                    .setContentView(R.layout.tutorial_center_2)
+                                    .setListener {
+                                        TutoShowcase.from(this)
+                                            .setContentView(R.layout.tutorial_center_3)
+                                            .show()
+                                    }
+                                    .on(R.id.fab_lens)
+                                    .addCircle()
+                                    .withBorder()
+                                    .show()
+                            }
+                            .on(R.id.fab_calendar)
+                            .addCircle()
+                            .withBorder()
+                            .show()
+                    }
+                    .setFitsSystemWindows(true)
+                    .on(R.id.swiper)
+                    .displaySwipableRight()
+                    .delayed(399)
+                    .animated(true)
+                .show()
+            }
+            .setFitsSystemWindows(true)
+            .on(R.id.swiper)
+            .displaySwipableLeft()
+            .delayed(399)
+            .animated(true)
+            .show()
+    }
+
+    private fun init() {
         MobileAds.initialize(this) {}
         val mInterstitialAd = InterstitialAd(this)
 
         //Test AD
-        //mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
 
         //Personallized AD
-        mInterstitialAd.adUnitId = "ca-app-pub-2747296886141297/7705354849"
+        //mInterstitialAd.adUnitId = "ca-app-pub-2747296886141297/7705354849"
 
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
         if (!isTaskRoot
             && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
             && intent.action != null
-            && intent.action.equals(Intent.ACTION_MAIN)) {
-
+            && intent.action.equals(Intent.ACTION_MAIN)
+        ) {
             finish()
             return
         }
 
-        initCustom()
-        imageLoader.init(ImageLoaderConfiguration.createDefault(this))
-        initoptions()
+        val window = this.window
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.statusBarColor = ContextCompat.getColor(this, R.color.colorPrimary)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        }
+
         desc_title.setOnClickListener {
             mScrollView.smoothScrollTo(
                 0,
@@ -115,12 +184,14 @@ class MainActivity : AppCompatActivity() {
         }
         sheetBehavior = BottomSheetBehavior.from(bottom_sheet)
         (sheetBehavior as BottomSheetBehavior<*>).isHideable = false
-        (sheetBehavior as BottomSheetBehavior<*>).setBottomSheetCallback(object : BottomSheetCallback() {
+        (sheetBehavior as BottomSheetBehavior<*>).setBottomSheetCallback(object :
+            BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN, BottomSheetBehavior.STATE_DRAGGING, BottomSheetBehavior.STATE_SETTLING, BottomSheetBehavior.STATE_HALF_EXPANDED -> {
                     }
-                    BottomSheetBehavior.STATE_EXPANDED -> fab_calendar.visibility = View.INVISIBLE
+                    BottomSheetBehavior.STATE_EXPANDED -> fab_calendar.visibility =
+                        View.INVISIBLE
                     BottomSheetBehavior.STATE_COLLAPSED -> {
                         fab_calendar.visibility = View.VISIBLE
                         mScrollView.smoothScrollTo(0, description.top)
@@ -135,7 +206,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        mInterstitialAd.adListener = object: AdListener() {
+        mInterstitialAd.adListener = object : AdListener() {
             override fun onAdLoaded() {
                 //mInterstitialAd.show()
             }
@@ -170,7 +241,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         fab_lens.setOnClickListener {
-            if (mInterstitialAd.isLoaded && adCheck==0) {
+            if (mInterstitialAd.isLoaded && adCheck == 0) {
                 mInterstitialAd.show()
             } else {
                 Log.d("TAG", "The interstitial wasn't loaded yet.")
@@ -183,13 +254,75 @@ class MainActivity : AppCompatActivity() {
             true
         }
         fab_calendar.setOnClickListener { datePicker() }
-        content_layout.setOnClickListener {
-            if ((sheetBehavior as BottomSheetBehavior<*>).state == BottomSheetBehavior.STATE_EXPANDED) {
-                (sheetBehavior as BottomSheetBehavior<*>).state = BottomSheetBehavior.STATE_COLLAPSED
+    }
+
+    private fun initswipe() {
+        content_layout.setOnTouchListener(object : OnSwipeTouchListener(this@MainActivity) {
+            @SuppressLint("SimpleDateFormat", "ClickableViewAccessibility")
+            override fun onTouch(v: View, event: MotionEvent): Boolean {
+                if ((sheetBehavior as BottomSheetBehavior<*>).state == BottomSheetBehavior.STATE_EXPANDED) {
+                    (sheetBehavior as BottomSheetBehavior<*>).state =
+                        BottomSheetBehavior.STATE_COLLAPSED
+                }
+                return super.onTouch(v, event)
             }
-        }
-        initblur()
-        fetchData()
+
+            @SuppressLint("SimpleDateFormat")
+            override fun onSwipeLeft() {
+                if (maxDate1 != null) {
+                    val items2: Array<String> =
+                        displayDate!!.split("-".toRegex()).toTypedArray()
+                    val dispYear = items2[0].toInt()
+                    val dispMonth = items2[1].toInt()
+                    val dispDay = items2[2].toInt()
+
+                    val c = Calendar.getInstance()
+                    if (displayDate == maxDate1)
+                        Log.d("TAG", "Not Applied")
+                    else {
+                        val sdf = SimpleDateFormat("yyyy-MM-dd")
+                        c.time = sdf.parse("$dispYear-$dispMonth-$dispDay")
+                        c.add(Calendar.DATE, 1) // number of days to add
+                        dateChosen = sdf.format(c.time)
+                        Log.d("TAG", dateChosen)
+                        fetchData()
+
+                        userchosenyear = c.get(Calendar.YEAR)
+                        userchosenmonth = c.get(Calendar.MONTH) + 1
+                        userchosenday = c.get(Calendar.DAY_OF_MONTH)
+                    }
+                }
+            }
+
+            @SuppressLint("SimpleDateFormat")
+            override fun onSwipeRight() {
+                val c = Calendar.getInstance()
+
+                val items2: Array<String> = displayDate!!.split("-".toRegex()).toTypedArray()
+                val dispYear = items2[0].toInt()
+                val dispMonth = items2[1].toInt()
+                val dispDay = items2[2].toInt()
+
+                val minYear = 1995
+                val minMonth = 6
+                val minDay = 16
+                //Log.d("TAG", dispDay.toString()+" "+minDay+" "+(dispMonth).toString()+" "+minMonth)
+                if (dispDay == minDay && dispMonth == minMonth && dispYear == minYear)
+                    Log.d("TAG", "Not Applied")
+                else {
+                    val sdf = SimpleDateFormat("yyyy-MM-dd")
+                    c.time = sdf.parse("$dispYear-$dispMonth-$dispDay")
+                    c.add(Calendar.DATE, -1) // number of days to sub
+                    dateChosen = sdf.format(c.time)
+                    Log.d("TAG", dateChosen)
+                    fetchData()
+
+                    userchosenyear = c.get(Calendar.YEAR)
+                    userchosenmonth = c.get(Calendar.MONTH) + 1
+                    userchosenday = c.get(Calendar.DAY_OF_MONTH)
+                }
+            }
+        })
     }
 
     private fun initchooser()
@@ -217,17 +350,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initCustom() {
-        val window = this.window
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.statusBarColor = ContextCompat.getColor(this, R.color.colorPrimary)
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        }
-    }
-
     private fun initoptions() {
         options =
             DisplayImageOptions.Builder()
@@ -237,12 +359,14 @@ class MainActivity : AppCompatActivity() {
                 .resetViewBeforeLoading(false) // default
                 //.delayBeforeLoading(1000)
                 .cacheInMemory(true) // default
-                .cacheOnDisk(false) // default
+                .cacheOnDisk(true) // default
                 .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2) // default
                 .bitmapConfig(Bitmap.Config.ARGB_8888) // default
                 .displayer(SimpleBitmapDisplayer()) // default
                 .handler(Handler()) // default
                 .build()
+
+        imageLoader.init(ImageLoaderConfiguration.createDefault(this))
     }
 
     private fun fullScreenFunc() {
@@ -354,9 +478,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun fetchData() {
+        val cacheSize = (5 * 1024 * 1024).toLong()
+        val myCache = Cache(cacheDir, cacheSize)
+
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(1, TimeUnit.MINUTES)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .cache(myCache)
+            .addInterceptor { chain ->
+                var request = chain.request()
+                request = if (hasNetwork(this)!!)
+                    request.newBuilder().header("Cache-Control", "public, max-age=" + 5).build()
+                else
+                    request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build()
+                chain.proceed(request)
+            }
+            .build()
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api.nasa.gov/planetary/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
             .build()
         val service: DataApi = retrofit.create(DataApi::class.java)
         //first run
@@ -376,114 +518,164 @@ class MainActivity : AppCompatActivity() {
                 call: Call<DataModel?>,
                 response: Response<DataModel?>
             ) {
-                val data: DataModel? = response.body()
-                if (flag == 0) {
-                    if (data != null) {
-                        maxDate1 = data.date
-                        flag++
+                if (response.isSuccessful) {
+                    val data: DataModel? = response.body()
+                    if (flag == 0) {
+                        if (data != null) {
+                            maxDate1 = data.date
+                            flag++
+                        }
                     }
-                }
-                if (data != null) {
-                    displayDate = data.date
-                    if (data.media_type.equals("image")) {
-                        mediaType = data.media_type
-                        sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
-                        imageToDiplay = if (flag == 9999) data.url else data.hdurl
-                        imageLoader.displayImage(imageToDiplay,
-                            image,
-                            options,
-                            object : ImageLoadingListener {
-                                override fun onLoadingStarted(
-                                    imageUri: String,
-                                    view: View
-                                ) {
-                                }
+                    if (data != null) {
+                        displayDate = data.date
+                        if (data.media_type.equals("image")) {
+                            mediaType = data.media_type
+                            sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+                            imageToDiplay = if (flag == 9999) data.url else data.hdurl
+                            imageLoader.displayImage(imageToDiplay,
+                                image,
+                                options,
+                                object : ImageLoadingListener {
+                                    override fun onLoadingStarted(
+                                        imageUri: String,
+                                        view: View
+                                    ) {
+                                    }
 
-                                override fun onLoadingFailed(
-                                    imageUri: String,
-                                    view: View,
-                                    failReason: FailReason
-                                ) {
-                                    if (flag == 9999) {
-                                        Log.e("TAg", "failed")
+                                    override fun onLoadingFailed(
+                                        imageUri: String,
+                                        view: View,
+                                        failReason: FailReason
+                                    ) {
+                                        if (flag == 9999) {
+                                            Log.e("TAg", "failed")
+                                            dialog.dismiss()
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                R.string.server_issue,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            dialog.dismiss()
+                                            flag = 9999
+                                            fetchData()
+                                        }
+                                    }
+
+                                    override fun onLoadingComplete(
+                                        imageUri: String,
+                                        view: View,
+                                        loadedImage: Bitmap
+                                    ) {
+                                        fab_lens.setImageDrawable(resources.getDrawable(R.drawable.zoom_on))
+                                        date_view.text = data.date
+                                        description.text = data.explanation
+                                        title_view.text = data.title
+                                        image.isZoomable = false
+                                        image.isTranslatable = false
+                                        image.autoCenter = false
+                                        image.reset(true)
+                                        image.scaleType = ImageView.ScaleType.CENTER_CROP
                                         dialog.dismiss()
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            R.string.server_issue,
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    } else {
+                                        flag = 1
+
+                                        val prefs: SharedPreferences =
+                                            PreferenceManager.getDefaultSharedPreferences(
+                                                baseContext
+                                            )
+                                        val previouslyStarted: Boolean =
+                                            prefs.getBoolean(
+                                                getString(R.string.pref_previously_started),
+                                                false
+                                            )
+                                        if (!previouslyStarted) {
+                                            val edit: SharedPreferences.Editor = prefs.edit()
+                                            edit.putBoolean(
+                                                getString(R.string.pref_previously_started),
+                                                java.lang.Boolean.TRUE
+                                            )
+                                            edit.apply()
+                                            initshowcase()
+                                        }
+                                    }
+
+                                    override fun onLoadingCancelled(
+                                        imageUri: String,
+                                        view: View
+                                    ) {
                                         dialog.dismiss()
-                                        flag = 9999
-                                        fetchData()
                                     }
                                 }
-
-                                override fun onLoadingComplete(
-                                    imageUri: String,
-                                    view: View,
-                                    loadedImage: Bitmap
-                                ) {
-                                    fab_lens.setImageDrawable(resources.getDrawable(R.drawable.zoom_on))
-                                    date_view.text = data.date
-                                    description.text = data.explanation
-                                    title_view.text = data.title
-                                    image.isZoomable = false
-                                    image.isTranslatable = false
-                                    image.autoCenter = false
-                                    image.reset(true)
-                                    image.scaleType = ImageView.ScaleType.CENTER_CROP
-                                    dialog.dismiss()
-                                    flag = 1
+                            ) { _: String?, _: View?, _: Int, _: Int -> }
+                        } else if (data.media_type.equals("video")) {
+                            mediaType = data.media_type
+                            fab_lens.setImageDrawable(resources.getDrawable(R.drawable.play_1))
+                            date_view.text = data.date
+                            sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+                            description.text = data.explanation
+                            title_view!!.text = data.title
+                            try {
+                                Log.e("URL is->", "" + data.url)
+                                val id: String = getVideoId(data.url).toString()
+                                Log.e("URL is->", "" + id)
+                                videoId = id
+                                when {
+                                    data.url!!.contains("youtu") -> {
+                                        Log.e("YT", "true")
+                                        imgUrl = "http://img.youtube.com/vi/$id/0.jpg"
+                                        flagCheck = 1
+                                        videoThumbnailLoader(imgUrl!!)
+                                    }
+                                    data.url.contains("vimeo") -> {
+                                        Log.e("Vimeo", "false")
+                                        imgUrl = getvimeothumbnail(id)
+                                        flagCheck = 2
+                                    }
+                                    else -> {
+                                        image.setImageDrawable(resources.getDrawable(R.drawable.loading))
+                                        image.isZoomable = false
+                                        image.isTranslatable = false
+                                        image.autoCenter = false
+                                        image.reset(true)
+                                        image.scaleType = ImageView.ScaleType.FIT_CENTER
+                                        vidUrl = data.url
+                                        dialog.dismiss()
+                                        flagCheck = 3
+                                        val prefs: SharedPreferences =
+                                            PreferenceManager.getDefaultSharedPreferences(
+                                                baseContext
+                                            )
+                                        val previouslyStarted: Boolean =
+                                            prefs.getBoolean(
+                                                getString(R.string.pref_previously_started),
+                                                false
+                                            )
+                                        if (!previouslyStarted) {
+                                            val edit: SharedPreferences.Editor = prefs.edit()
+                                            edit.putBoolean(
+                                                getString(R.string.pref_previously_started),
+                                                java.lang.Boolean.TRUE
+                                            )
+                                            edit.apply()
+                                            initshowcase()
+                                        }
+                                    }
                                 }
-
-                                override fun onLoadingCancelled(
-                                    imageUri: String,
-                                    view: View
-                                ) {
-                                    dialog.dismiss()
-                                }
+                            } catch (throwable: Throwable) {
+                                dialog.dismiss()
+                                throwable.printStackTrace()
                             }
-                        ) { _: String?, _: View?, _: Int, _: Int -> }
-                    } else if (data.media_type.equals("video")) {
-                        mediaType = data.media_type
-                        fab_lens.setImageDrawable(resources.getDrawable(R.drawable.play_1))
-                        date_view.text = data.date
-                        sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
-                        description.text = data.explanation
-                        title_view!!.text = data.title
-                        try {
-                            Log.e("URL is->", "" + data.url)
-                            val id: String = getVideoId(data.url).toString()
-                            Log.e("URL is->", "" + id)
-                            videoId = id
-                            when {
-                                data.url!!.contains("youtu") -> {
-                                    Log.e("YT", "true")
-                                    imgUrl = "http://img.youtube.com/vi/$id/0.jpg"
-                                    flagCheck = 1
-                                    videoThumbnailLoader(imgUrl!!)
-                                }
-                                data.url.contains("vimeo") -> {
-                                    Log.e("Vimeo", "false")
-                                    imgUrl = getvimeothumbnail(id)
-                                    flagCheck = 2
-                                }
-                                else -> {
-                                    image.setImageDrawable(resources.getDrawable(R.drawable.loading))
-                                    image.isZoomable = false
-                                    image.isTranslatable = false
-                                    image.autoCenter = false
-                                    image.reset(true)
-                                    image.scaleType = ImageView.ScaleType.FIT_CENTER
-                                    vidUrl = data.url
-                                    dialog.dismiss()
-                                    flagCheck = 3
-                                }
-                            }
-                        } catch (throwable: Throwable) {
-                            dialog.dismiss()
-                            throwable.printStackTrace()
+                        }
+                    }
+                }
+                else {
+                    dialog.dismiss()
+                    when(response.code()) {
+                        400 -> Toast.makeText(this@MainActivity, "Data Not Found. Try something else.", Toast.LENGTH_SHORT).show()
+                        404 -> Toast.makeText(this@MainActivity, "Data Not Found. Try something else.", Toast.LENGTH_SHORT).show()
+                        500 -> Toast.makeText(this@MainActivity, "Server Broken. Please Try Again Later", Toast.LENGTH_SHORT).show()
+                        else ->{
+                            Toast.makeText(this@MainActivity, R.string.network_issue, Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -536,6 +728,20 @@ class MainActivity : AppCompatActivity() {
                 image.reset(true)
                 image.scaleType = ImageView.ScaleType.FIT_CENTER
                 dialog.dismiss()
+
+                val prefs: SharedPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(baseContext)
+                val previouslyStarted: Boolean =
+                    prefs.getBoolean(getString(R.string.pref_previously_started), false)
+                if (!previouslyStarted) {
+                    val edit: SharedPreferences.Editor = prefs.edit()
+                    edit.putBoolean(
+                        getString(R.string.pref_previously_started),
+                        java.lang.Boolean.TRUE
+                    )
+                    edit.apply()
+                    initshowcase()
+                }
             }
 
             override fun onLoadingCancelled(
@@ -572,10 +778,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getvimeothumbnail(videoID: String): String? {
+        val cacheSize = (5 * 1024 * 1024).toLong()
+        val myCache = Cache(cacheDir, cacheSize)
+
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(1, TimeUnit.MINUTES)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .cache(myCache)
+            .addInterceptor { chain ->
+                var request = chain.request()
+                request = if (hasNetwork(this)!!)
+                    request.newBuilder().header("Cache-Control", "public, max-age=" + 5).build()
+                else
+                    request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build()
+                chain.proceed(request)
+            }
+            .build()
         val vimeophotourl = "https://vimeo.com/api/v2/video/$videoID.json/"
         val retrofit = Retrofit.Builder()
             .baseUrl(vimeophotourl)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
             .build()
         val request = retrofit.create(DataApi::class.java)
         request.getFeedThumbnail()?.enqueue(object : Callback<List<VimeoModel>?> {
@@ -583,9 +807,23 @@ class MainActivity : AppCompatActivity() {
                 call: Call<List<VimeoModel>?>,
                 response: Response<List<VimeoModel>?>
             ) {
+                if (response.isSuccessful) {
                 if (response.body() != null) {
                     vimeoImg = response.body()!![0].thumbnail_large
                     videoThumbnailLoader(vimeoImg!!)
+                }
+                }
+                else
+                {
+                    dialog.dismiss()
+                    when(response.code()) {
+                        400 -> Toast.makeText(this@MainActivity, "Data Not Found. Try something else.", Toast.LENGTH_SHORT).show()
+                        404 -> Toast.makeText(this@MainActivity, "Data Not Found. Try something else.", Toast.LENGTH_SHORT).show()
+                        500 -> Toast.makeText(this@MainActivity, "Server Broken. Please Try Again Later", Toast.LENGTH_SHORT).show()
+                        else ->{
+                            Toast.makeText(this@MainActivity, R.string.network_issue, Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
             }
 
@@ -618,4 +856,14 @@ class MainActivity : AppCompatActivity() {
                 .postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         }
     }
+
+    private fun hasNetwork(context: Context): Boolean? {
+        var isConnected: Boolean? = false // Initial Value
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+        if (activeNetwork != null && activeNetwork.isConnected)
+            isConnected = true
+        return isConnected
+    }
 }
+
