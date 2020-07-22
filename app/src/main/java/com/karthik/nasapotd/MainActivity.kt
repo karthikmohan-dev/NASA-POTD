@@ -837,13 +837,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getvimeothumbnail(videoID: String): String? {
-        val cacheSize = (5 * 1024 * 1024).toLong()
-        val myCache = Cache(cacheDir, cacheSize)
+        val cacheSize1 = (5 * 1024 * 1024).toLong()
+        val myCache1 = Cache(cacheDir, cacheSize1)
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(1, TimeUnit.MINUTES)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
-            .cache(myCache)
+            .cache(myCache1)
             .addInterceptor { chain ->
                 var request = chain.request()
                 request = if (hasNetwork(this)!!)
@@ -926,13 +926,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getTranslation(lang: String){
-        val cacheSize = (5 * 1024 * 1024).toLong()
-        val myCache = Cache(cacheDir, cacheSize)
+        val cacheSize2 = (5 * 1024 * 1024).toLong()
+        val myCache2 = Cache(cacheDir, cacheSize2)
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(1, TimeUnit.MINUTES)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
-            .cache(myCache)
+            .cache(myCache2)
             .addInterceptor { chain ->
                 var request = chain.request()
                 request = if (hasNetwork(this)!!)
