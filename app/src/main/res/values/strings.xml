@@ -30,6 +30,15 @@
     <string name="change_dates_using_this_button_nto_see_photos_of_other_dates">Change dates using this button to see more photos.</string>
     <string name="use_this_button_to_zoom_in_out_nthe_current_image">Use this button to zoom in/out the current image</string>
     <string name="enjoy_and_please_rate_this_app_on_play_store">Enjoy and please rate this app on play store!\n\nThank You!</string>
+    <string-array name="spinner">
+        <item>English</item>
+        <item>Hindi</item>
+        <item>Tamil</item>
+        <item>Telegu</item>
+        <item>Malayalam</item>
+        <item>Marathi</item>
+        <item>Bengali</item>
+    </string-array>
 
 
 </resources>

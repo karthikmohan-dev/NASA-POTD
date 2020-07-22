@@ -18,9 +18,8 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.util.Log
 import android.view.*
-import android.widget.DatePicker
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.github.florent37.tutoshowcase.TutoShowcase
@@ -31,8 +30,8 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.karthik.nasapotd.api.DataApi
+import com.karthik.nasapotd.api.DataApi.Companion.trans_api_key
 import com.karthik.nasapotd.model.DataModel
-import com.karthik.nasapotd.model.VimeoModel
 import com.nostra13.universalimageloader.core.DisplayImageOptions
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
@@ -60,6 +59,9 @@ import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity() {
 
+    private var transFlag: Int = 0
+    private var call1: Call<DataApi.TransModel>? = null
+    private var descText: String? = null
     private var radius = 20f
     private var doubleBackToExitPressedOnce = false
     var imageLoader: ImageLoader = ImageLoader.getInstance()
@@ -99,10 +101,19 @@ class MainActivity : AppCompatActivity() {
         }
         else
         {
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("No Internet Available!")
+            builder.setMessage("Sorry! No Internet Available. Try Again Later")
+            builder.setIcon(android.R.drawable.ic_dialog_alert)
+            builder.setPositiveButton("OK"){ _, _ ->
+                finish()
+            }
+            val alertDialog: AlertDialog = builder.create()
+            alertDialog.setCancelable(false)
+            alertDialog.show()
             Toast.makeText(this@MainActivity, getString(R.string.no_network), Toast.LENGTH_SHORT).show()
         }
     }
-
 
     private fun initshowcase() {
         TutoShowcase.from(this)
@@ -149,13 +160,11 @@ class MainActivity : AppCompatActivity() {
     private fun init() {
         MobileAds.initialize(this) {}
         val mInterstitialAd = InterstitialAd(this)
-
         //Test AD
-        //mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
-
+        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
         //Personallized AD
-        mInterstitialAd.adUnitId = "ca-app-pub-2747296886141297/7705354849"
-
+        //mInterstitialAd.adUnitId = DataApi.ad_id
+        mInterstitialAd.loadAd(AdRequest.Builder().build())
         if (!isTaskRoot
             && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
             && intent.action != null
@@ -164,7 +173,6 @@ class MainActivity : AppCompatActivity() {
             finish()
             return
         }
-
         val window = this.window
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -173,7 +181,6 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
-
         desc_title.setOnClickListener {
             mScrollView.smoothScrollTo(
                 0,
@@ -196,35 +203,29 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-
             override fun onSlide(
                 bottomSheet: View,
                 slideOffset: Float
             ) {
             }
         })
-
         mInterstitialAd.adListener = object : AdListener() {
             override fun onAdLoaded() {
                 //mInterstitialAd.show()
             }
-
             override fun onAdFailedToLoad(errorCode: Int) {
                 Log.e("TAG", "AD Not Working")
                 initchooser()
             }
-
             override fun onAdClicked() {
 //                onAdClosed()
 //                initchooser()
             }
-
             override fun onAdClosed() {
                 initchooser()
                 mInterstitialAd.loadAd(AdRequest.Builder().build())
             }
         }
-
         fab_lens.setOnLongClickListener {
             if (mediaType == "image") Toast.makeText(
                 this@MainActivity,
@@ -237,7 +238,6 @@ class MainActivity : AppCompatActivity() {
             ).show()
             true
         }
-
         fab_lens.setOnClickListener {
             if (mInterstitialAd.isLoaded && adCheck == 0) {
                 mInterstitialAd.show()
@@ -245,17 +245,61 @@ class MainActivity : AppCompatActivity() {
                 Log.d("TAG", "The interstitial wasn't loaded yet.")
                 initchooser()
             }
-            if(!mInterstitialAd.isLoaded)
-            {
-                mInterstitialAd.loadAd(AdRequest.Builder().build())
-            }
-
         }
         fab_calendar.setOnLongClickListener {
             Toast.makeText(this@MainActivity, "Pick Date", Toast.LENGTH_SHORT).show()
             true
         }
         fab_calendar.setOnClickListener { datePicker() }
+        val spinner = resources.getStringArray(R.array.spinner)
+        val adapter: ArrayAdapter<String> = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinner)
+        spinner_language_to.adapter = adapter
+        spinner_language_to.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                when (position) {
+                    0 -> {
+                        if(transFlag!=0)
+                        getTranslation("en")
+                    }
+                    1 -> {
+                        transFlag = position
+                        getTranslation("hi")
+                    }
+                    2 -> {
+                        transFlag = position
+                        getTranslation("ta")
+                    }
+                    3 -> {
+                        transFlag = position
+                        getTranslation("te")
+                    }
+                    4 -> {
+                        transFlag = position
+                        getTranslation("ml")
+                    }
+                    5 -> {
+                        transFlag = position
+                        getTranslation("mr")
+                    }
+                    6 -> {
+                        transFlag = position
+                        getTranslation("bn")
+                    }
+                    else -> {
+
+                    }
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                Toast.makeText(applicationContext, "No option selected", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
     }
 
     private fun initswipe() {
@@ -277,7 +321,6 @@ class MainActivity : AppCompatActivity() {
                     val dispYear = items2[0].toInt()
                     val dispMonth = items2[1].toInt()
                     val dispDay = items2[2].toInt()
-
                     val c = Calendar.getInstance()
                     if (displayDate == maxDate1)
                         Log.d("TAG", "Not Applied")
@@ -288,7 +331,6 @@ class MainActivity : AppCompatActivity() {
                         dateChosen = sdf.format(c.time)
                         Log.d("TAG", dateChosen)
                         fetchData()
-
                         userchosenyear = c.get(Calendar.YEAR)
                         userchosenmonth = c.get(Calendar.MONTH) + 1
                         userchosenday = c.get(Calendar.DAY_OF_MONTH)
@@ -299,12 +341,10 @@ class MainActivity : AppCompatActivity() {
             @SuppressLint("SimpleDateFormat")
             override fun onSwipeRight() {
                 val c = Calendar.getInstance()
-
                 val items2: Array<String> = displayDate!!.split("-".toRegex()).toTypedArray()
                 val dispYear = items2[0].toInt()
                 val dispMonth = items2[1].toInt()
                 val dispDay = items2[2].toInt()
-
                 val minYear = 1995
                 val minMonth = 6
                 val minDay = 16
@@ -318,7 +358,6 @@ class MainActivity : AppCompatActivity() {
                     dateChosen = sdf.format(c.time)
                     Log.d("TAG", dateChosen)
                     fetchData()
-
                     userchosenyear = c.get(Calendar.YEAR)
                     userchosenmonth = c.get(Calendar.MONTH) + 1
                     userchosenday = c.get(Calendar.DAY_OF_MONTH)
@@ -359,7 +398,6 @@ class MainActivity : AppCompatActivity() {
                 //                .showImageForEmptyUri(R.drawable.empty) // resource or drawable
                 //                .showImageOnFail(R.drawable.error) // resource or drawable
                 .resetViewBeforeLoading(false) // default
-                //.delayBeforeLoading(1000)
                 .cacheInMemory(true) // default
                 .cacheOnDisk(true) // default
                 .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2) // default
@@ -460,7 +498,6 @@ class MainActivity : AppCompatActivity() {
             .init(
                 currYear, currMonth, currDay
             ) { _, _, _, _ -> }
-
         //Min Date
         c[1995, 5] = 16
         dialog.datePicker.minDate = c.timeInMillis
@@ -482,7 +519,6 @@ class MainActivity : AppCompatActivity() {
     fun fetchData() {
         val cacheSize = (5 * 1024 * 1024).toLong()
         val myCache = Cache(cacheDir, cacheSize)
-
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(1, TimeUnit.MINUTES)
             .readTimeout(30, TimeUnit.SECONDS)
@@ -530,8 +566,8 @@ class MainActivity : AppCompatActivity() {
                     }
                     if (data != null) {
                         displayDate = data.date
-                        if (data.media_type.equals("image")) {
-                            mediaType = data.media_type
+                        if (data.mediaType.equals("image")) {
+                            mediaType = data.mediaType
                             sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
                             imageToDiplay = if (flag == 9999) data.url else data.hdurl
                             imageLoader.displayImage(imageToDiplay,
@@ -543,7 +579,6 @@ class MainActivity : AppCompatActivity() {
                                         view: View
                                     ) {
                                     }
-
                                     override fun onLoadingFailed(
                                         imageUri: String,
                                         view: View,
@@ -563,7 +598,6 @@ class MainActivity : AppCompatActivity() {
                                             fetchData()
                                         }
                                     }
-
                                     override fun onLoadingComplete(
                                         imageUri: String,
                                         view: View,
@@ -572,6 +606,7 @@ class MainActivity : AppCompatActivity() {
                                         fab_lens.setImageDrawable(resources.getDrawable(R.drawable.zoom_on))
                                         date_view.text = data.date
                                         description.text = data.explanation
+                                        descText = data.explanation
                                         title_view.text = data.title
                                         image.isZoomable = false
                                         image.isTranslatable = false
@@ -580,7 +615,8 @@ class MainActivity : AppCompatActivity() {
                                         image.scaleType = ImageView.ScaleType.CENTER_CROP
                                         dialog.dismiss()
                                         flag = 1
-
+                                        spinner_language_to.setSelection(0, true)
+                                        transFlag = 0
                                         val prefs: SharedPreferences =
                                             PreferenceManager.getDefaultSharedPreferences(
                                                 baseContext
@@ -600,7 +636,6 @@ class MainActivity : AppCompatActivity() {
                                             initshowcase()
                                         }
                                     }
-
                                     override fun onLoadingCancelled(
                                         imageUri: String,
                                         view: View
@@ -609,13 +644,15 @@ class MainActivity : AppCompatActivity() {
                                     }
                                 }
                             ) { _: String?, _: View?, _: Int, _: Int -> }
-                        } else if (data.media_type.equals("video")) {
-                            mediaType = data.media_type
+                        } else if (data.mediaType.equals("video")) {
+                            mediaType = data.mediaType
                             fab_lens.setImageDrawable(resources.getDrawable(R.drawable.play_1))
                             date_view.text = data.date
                             sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
                             description.text = data.explanation
                             title_view!!.text = data.title
+                            spinner_language_to.setSelection(0, true)
+                            transFlag = 0
                             try {
                                 Log.e("URL is->", "" + data.url)
                                 val id: String = getVideoId(data.url).toString()
@@ -673,8 +710,8 @@ class MainActivity : AppCompatActivity() {
                 else {
                     dialog.dismiss()
                     when(response.code()) {
-                        400 -> Toast.makeText(this@MainActivity, "Data Not Found. Try something else.", Toast.LENGTH_SHORT).show()
-                        404 -> Toast.makeText(this@MainActivity, "Data Not Found. Try something else.", Toast.LENGTH_SHORT).show()
+                        400 -> Toast.makeText(this@MainActivity, "Data Not Found. Try Later", Toast.LENGTH_SHORT).show()
+                        404 -> Toast.makeText(this@MainActivity, "Data Not Found. Try Later", Toast.LENGTH_SHORT).show()
                         500 -> Toast.makeText(this@MainActivity, "Server Broken. Please Try Again Later", Toast.LENGTH_SHORT).show()
                         else ->{
                             Toast.makeText(this@MainActivity, R.string.network_issue, Toast.LENGTH_SHORT).show()
@@ -682,7 +719,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-
             override fun onFailure(call: Call<DataModel?>, t: Throwable) {
                 dialog.dismiss()
                 Toast.makeText(this@MainActivity, R.string.network_issue, Toast.LENGTH_SHORT).show()
@@ -705,7 +741,6 @@ class MainActivity : AppCompatActivity() {
                 view: View
             ) {
             }
-
             override fun onLoadingFailed(
                 imageUri: String,
                 view: View,
@@ -718,7 +753,6 @@ class MainActivity : AppCompatActivity() {
                 ).show()
                 dialog.dismiss()
             }
-
             override fun onLoadingComplete(
                 imageUri: String,
                 view: View,
@@ -730,7 +764,6 @@ class MainActivity : AppCompatActivity() {
                 image.reset(true)
                 image.scaleType = ImageView.ScaleType.FIT_CENTER
                 dialog.dismiss()
-
                 val prefs: SharedPreferences =
                     PreferenceManager.getDefaultSharedPreferences(baseContext)
                 val previouslyStarted: Boolean =
@@ -745,7 +778,6 @@ class MainActivity : AppCompatActivity() {
                     initshowcase()
                 }
             }
-
             override fun onLoadingCancelled(
                 imageUri: String,
                 view: View
@@ -782,7 +814,6 @@ class MainActivity : AppCompatActivity() {
     private fun getvimeothumbnail(videoID: String): String? {
         val cacheSize = (5 * 1024 * 1024).toLong()
         val myCache = Cache(cacheDir, cacheSize)
-
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(1, TimeUnit.MINUTES)
             .readTimeout(30, TimeUnit.SECONDS)
@@ -804,14 +835,14 @@ class MainActivity : AppCompatActivity() {
             .client(okHttpClient)
             .build()
         val request = retrofit.create(DataApi::class.java)
-        request.getFeedThumbnail()?.enqueue(object : Callback<List<VimeoModel>?> {
+        request.getFeedThumbnail()?.enqueue(object : Callback<List<DataApi.VimeoModel>?> {
             override fun onResponse(
-                call: Call<List<VimeoModel>?>,
-                response: Response<List<VimeoModel>?>
+                call: Call<List<DataApi.VimeoModel>?>,
+                response: Response<List<DataApi.VimeoModel>?>
             ) {
                 if (response.isSuccessful) {
                 if (response.body() != null) {
-                    vimeoImg = response.body()!![0].thumbnail_large
+                    vimeoImg = response.body()!![0].thumbnailLarge
                     videoThumbnailLoader(vimeoImg!!)
                 }
                 }
@@ -819,8 +850,8 @@ class MainActivity : AppCompatActivity() {
                 {
                     dialog.dismiss()
                     when(response.code()) {
-                        400 -> Toast.makeText(this@MainActivity, "Data Not Found. Try something else.", Toast.LENGTH_SHORT).show()
-                        404 -> Toast.makeText(this@MainActivity, "Data Not Found. Try something else.", Toast.LENGTH_SHORT).show()
+                        400 -> Toast.makeText(this@MainActivity, "Data Not Found. Try Later.", Toast.LENGTH_SHORT).show()
+                        404 -> Toast.makeText(this@MainActivity, "Data Not Found. Try Later", Toast.LENGTH_SHORT).show()
                         500 -> Toast.makeText(this@MainActivity, "Server Broken. Please Try Again Later", Toast.LENGTH_SHORT).show()
                         else ->{
                             Toast.makeText(this@MainActivity, R.string.network_issue, Toast.LENGTH_SHORT).show()
@@ -828,11 +859,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-
             override fun onFailure(
-                call: Call<List<VimeoModel>?>,
+                call: Call<List<DataApi.VimeoModel>?>,
                 t: Throwable
             ) {
+                dialog.dismiss()
                 Toast.makeText(
                     this@MainActivity,
                     "Couldn't load thumbnail. Error!",
@@ -867,5 +898,66 @@ class MainActivity : AppCompatActivity() {
             isConnected = true
         return isConnected
     }
-}
 
+    private fun getTranslation(lang: String){
+        val cacheSize = (5 * 1024 * 1024).toLong()
+        val myCache = Cache(cacheDir, cacheSize)
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(1, TimeUnit.MINUTES)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .cache(myCache)
+            .addInterceptor { chain ->
+                var request = chain.request()
+                request = if (hasNetwork(this)!!)
+                    request.newBuilder().header("Cache-Control", "public, max-age=" + 5).build()
+                else
+                    request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build()
+                chain.proceed(request)
+            }
+            .build()
+        val translateurl = "https://translate.yandex.net/api/v1.5/tr.json/"
+        val retrofit = Retrofit.Builder()
+            .baseUrl(translateurl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+        val service: DataApi = retrofit.create(DataApi::class.java)
+        call1 = service.getTranslate(trans_api_key, lang, descText)
+        dialog = ProgressDialog.show(this@MainActivity, "", "Loading. Please wait...", true)
+        call1!!.enqueue(object : Callback<DataApi.TransModel?> {
+            override fun onResponse(
+                call: Call<DataApi.TransModel?>,
+                response: Response<DataApi.TransModel?>
+            ) {
+                if (response.isSuccessful) {
+                    val data: DataApi.TransModel? = response.body()
+                    if (response.body() != null) {
+                        description.text = data!!.texter!![0]
+                        dialog.dismiss()
+                    }
+                }
+                else
+                {
+                    dialog.dismiss()
+                    when(response.code()) {
+                        400 -> Toast.makeText(this@MainActivity, "Data Not Found. Try Later.", Toast.LENGTH_SHORT).show()
+                        404 -> Toast.makeText(this@MainActivity, "Data Not Found. Try Later.", Toast.LENGTH_SHORT).show()
+                        500 -> Toast.makeText(this@MainActivity, "Couldn't Translate. Error!", Toast.LENGTH_SHORT).show()
+                        else ->{
+                            Toast.makeText(this@MainActivity, R.string.network_issue, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+            override fun onFailure(call: Call<DataApi.TransModel?>, t: Throwable) {
+                dialog.dismiss()
+                Toast.makeText(
+                    this@MainActivity,
+                    R.string.network_issue,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+}

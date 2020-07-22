@@ -18,11 +18,7 @@ class DataModel {
 
     @SerializedName("media_type")
     @Expose
-    val media_type: String? = null
-
-    @SerializedName("service_version")
-    @Expose
-    val service_version: String? = null
+    val mediaType: String? = null
 
     @SerializedName("title")
     @Expose

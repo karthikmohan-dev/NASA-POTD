@@ -70,4 +70,5 @@ dependencies {
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "com.squareup.okhttp3:okhttp:4.8.0"
     implementation 'com.github.florent37:tutoshowcase:1.0.1'
+    implementation "com.github.skydoves:powerspinner:1.1.0"
 }
