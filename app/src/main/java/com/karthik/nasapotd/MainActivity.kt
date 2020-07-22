@@ -119,55 +119,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initshowcase() {
-        TutoShowcase.from(this)
-            .setContentView(R.layout.tutorial_left)
-            .setListener {
-                TutoShowcase.from(this)
-                .setContentView(R.layout.tutorial_right)
-                    .setListener {
-                        TutoShowcase.from(this)
-                            .setContentView(R.layout.tutorial_center_1)
-                            .setListener {
-                                TutoShowcase.from(this)
-                                    .setContentView(R.layout.tutorial_center_2)
-                                    .setListener {
-                                        TutoShowcase.from(this)
-                                            .setContentView(R.layout.tutorial_center_3)
-                                            .show()
-                                    }
-                                    .on(R.id.fab_lens)
-                                    .addCircle()
-                                    .withBorder()
-                                    .show()
-                            }
-                            .on(R.id.fab_calendar)
-                            .addCircle()
-                            .withBorder()
-                            .show()
-                    }
-                    .setFitsSystemWindows(true)
-                    .on(R.id.swiper)
-                    .displaySwipableRight()
-                    .delayed(399)
-                    .animated(true)
-                .show()
-            }
-            .setFitsSystemWindows(true)
-            .on(R.id.swiper)
-            .displaySwipableLeft()
-            .delayed(399)
-            .animated(true)
-            .show()
-    }
-
     private fun init() {
         MobileAds.initialize(this) {}
         val mInterstitialAd = InterstitialAd(this)
         //Test AD
-        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        //mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
         //Personallized AD
-        //mInterstitialAd.adUnitId = DataApi.ad_id
+        mInterstitialAd.adUnitId = DataApi.ad_id
         mInterstitialAd.loadAd(AdRequest.Builder().build())
         if (!isTaskRoot
             && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
@@ -243,7 +201,26 @@ class MainActivity : AppCompatActivity() {
             true
         }
         fab_lens.setOnClickListener {
-            if (mInterstitialAd.isLoaded && adCheck == 0) {
+            val prefs: SharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(
+                    baseContext
+                )
+            val previouslyStarted1: Boolean =
+                prefs.getBoolean(
+                    getString(R.string.pref_previously_started_1),
+                    false
+                )
+            if (!previouslyStarted1) {
+                val edit: SharedPreferences.Editor = prefs.edit()
+                edit.putBoolean(
+                    getString(R.string.pref_previously_started_1),
+                    java.lang.Boolean.TRUE
+                )
+                edit.apply()
+                initchooser()
+                initshowcase1()
+            }
+            else if (mInterstitialAd.isLoaded && adCheck == 0) {
                 mInterstitialAd.show()
             } else {
                 Log.d("TAG", "The interstitial wasn't loaded yet.")
@@ -305,6 +282,57 @@ class MainActivity : AppCompatActivity() {
                     .show()
             }
         }
+    }
+
+    private fun initshowcase() {
+        TutoShowcase.from(this)
+            .setContentView(R.layout.tutorial_left)
+            .setListener {
+                TutoShowcase.from(this)
+                    .setContentView(R.layout.tutorial_right)
+                    .setListener {
+                        TutoShowcase.from(this)
+                            .setContentView(R.layout.tutorial_center_1)
+                            .setListener {
+                                TutoShowcase.from(this)
+                                    .setContentView(R.layout.tutorial_center_2)
+                                    .setListener {
+                                        TutoShowcase.from(this)
+                                            .setContentView(R.layout.tutorial_center_3)
+                                            .show()
+                                    }
+                                    .on(R.id.fab_lens)
+                                    .addCircle()
+                                    .withBorder()
+                                    .show()
+                            }
+                            .on(R.id.fab_calendar)
+                            .addCircle()
+                            .withBorder()
+                            .show()
+                    }
+                    .setFitsSystemWindows(true)
+                    .on(R.id.swiper)
+                    .displaySwipableRight()
+                    .delayed(399)
+                    .animated(true)
+                    .show()
+            }
+            .setFitsSystemWindows(true)
+            .on(R.id.swiper)
+            .displaySwipableLeft()
+            .delayed(399)
+            .animated(true)
+            .show()
+    }
+
+    private fun initshowcase1() {
+        TutoShowcase.from(this)
+            .setContentView(R.layout.tutorial_center_4)
+            .setListener {}
+            .setFitsSystemWindows(true)
+            .on(R.id.imageView2)
+            .show()
     }
 
     private fun initswipe() {
