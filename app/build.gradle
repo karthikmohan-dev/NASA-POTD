@@ -67,8 +67,8 @@ dependencies {
     implementation 'com.ct7ct7ct7.androidvimeoplayer:library:1.0.6'
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
     implementation 'com.google.android.gms:play-services-ads:19.2.0'
-    implementation "androidx.cardview:cardview:1.0.0"
-    implementation "com.squareup.okhttp3:okhttp:4.8.0"
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.8.0'
     implementation 'com.github.florent37:tutoshowcase:1.0.1'
-    implementation "com.github.skydoves:powerspinner:1.1.0"
+    implementation 'cc.cloudist.acplibrary:library:1.2.1'
 }

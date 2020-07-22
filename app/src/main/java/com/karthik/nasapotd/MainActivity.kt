@@ -4,11 +4,11 @@ package com.karthik.nasapotd
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.net.Uri
@@ -22,6 +22,8 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import cc.cloudist.acplibrary.ACProgressConstant
+import cc.cloudist.acplibrary.ACProgressFlower
 import com.github.florent37.tutoshowcase.TutoShowcase
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
@@ -65,7 +67,7 @@ class MainActivity : AppCompatActivity() {
     private var radius = 20f
     private var doubleBackToExitPressedOnce = false
     var imageLoader: ImageLoader = ImageLoader.getInstance()
-    private lateinit var dialog: ProgressDialog
+    private lateinit var dialog: ACProgressFlower
     var options: DisplayImageOptions? = null
     private var dateChosen: String? = null
     private var call: Call<DataModel>? = null
@@ -545,12 +547,20 @@ class MainActivity : AppCompatActivity() {
         } else {
             service.getFeedWithDate(DataApi.api_key, dateChosen)
         }
-        dialog = if (flag == 9999) ProgressDialog.show(
-            this@MainActivity,
-            "",
-            "Taking more time than usual. Please wait...",
-            true
-        ) else ProgressDialog.show(this@MainActivity, "", "Loading. Please wait...", true)
+        dialog = if (flag == 9999) ACProgressFlower.Builder(this)
+            .direction(ACProgressConstant.DIRECT_CLOCKWISE)
+            .themeColor(Color.WHITE)
+            .isTextExpandWidth(true)
+            .text("Please Wait...")
+            .fadeColor(Color.DKGRAY).build()
+        else ACProgressFlower.Builder(this)
+            .direction(ACProgressConstant.DIRECT_CLOCKWISE)
+            .themeColor(Color.WHITE)
+            .isTextExpandWidth(true)
+            .text("Loading...")
+            .fadeColor(Color.DKGRAY).build()
+        dialog.setCancelable(false)
+        dialog.show()
         call!!.enqueue(object : Callback<DataModel?> {
             override fun onResponse(
                 call: Call<DataModel?>,
@@ -924,7 +934,14 @@ class MainActivity : AppCompatActivity() {
             .build()
         val service: DataApi = retrofit.create(DataApi::class.java)
         call1 = service.getTranslate(trans_api_key, lang, descText)
-        dialog = ProgressDialog.show(this@MainActivity, "", "Loading. Please wait...", true)
+        dialog = ACProgressFlower.Builder(this)
+            .direction(ACProgressConstant.DIRECT_CLOCKWISE)
+            .themeColor(Color.WHITE).
+            isTextExpandWidth(true)
+            .text("Loading...")
+            .fadeColor(Color.DKGRAY).build()
+        dialog.setCancelable(false)
+        dialog.show()
         call1!!.enqueue(object : Callback<DataApi.TransModel?> {
             override fun onResponse(
                 call: Call<DataApi.TransModel?>,
