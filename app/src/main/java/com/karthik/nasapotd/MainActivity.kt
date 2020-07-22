@@ -254,7 +254,7 @@ class MainActivity : AppCompatActivity() {
         }
         fab_calendar.setOnClickListener { datePicker() }
         val spinner = resources.getStringArray(R.array.spinner)
-        val adapter: ArrayAdapter<String> = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinner)
+        val adapter: ArrayAdapter<String> = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, spinner)
         spinner_language_to.adapter = adapter
         spinner_language_to.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -293,7 +293,8 @@ class MainActivity : AppCompatActivity() {
                         getTranslation("bn")
                     }
                     else -> {
-
+                        Toast.makeText(applicationContext, "This and other languages will be added soon.", Toast.LENGTH_LONG)
+                            .show()
                     }
                 }
             }
