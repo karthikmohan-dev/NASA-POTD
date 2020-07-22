@@ -34,11 +34,13 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCa
 import com.karthik.nasapotd.api.DataApi
 import com.karthik.nasapotd.api.DataApi.Companion.trans_api_key
 import com.karthik.nasapotd.model.DataModel
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache
 import com.nostra13.universalimageloader.core.DisplayImageOptions
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
 import com.nostra13.universalimageloader.core.assist.FailReason
 import com.nostra13.universalimageloader.core.assist.ImageScaleType
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
 import eightbitlab.com.blurview.RenderScriptBlur
@@ -65,7 +67,7 @@ class MainActivity : AppCompatActivity() {
     private var call1: Call<DataApi.TransModel>? = null
     private var descText: String? = null
     private var radius = 20f
-    private var doubleBackToExitPressedOnce = false
+    //private var doubleBackToExitPressedOnce = false
     var imageLoader: ImageLoader = ImageLoader.getInstance()
     private lateinit var dialog: ACProgressFlower
     var options: DisplayImageOptions? = null
@@ -409,7 +411,19 @@ class MainActivity : AppCompatActivity() {
                 .handler(Handler()) // default
                 .build()
 
-        imageLoader.init(ImageLoaderConfiguration.createDefault(this))
+        val config = ImageLoaderConfiguration.Builder(this)
+            .threadPriority(Thread.NORM_PRIORITY - 2)
+            .memoryCacheSize(20 * 1024 * 1024) // 20 Mb
+            .denyCacheImageMultipleSizesInMemory()
+            .diskCache(UnlimitedDiskCache(cacheDir))
+            .diskCacheSize(20 * 1024 * 1024) //20 Mb
+            .tasksProcessingOrder(QueueProcessingType.LIFO) //.enableLogging() // Not necessary in common
+            .defaultDisplayImageOptions(options)
+            .threadPoolSize(30)
+            .build()
+
+        //imageLoader.init(ImageLoaderConfiguration.createDefault(this))
+        imageLoader.init(config)
     }
 
     private fun fullScreenFunc() {
@@ -580,7 +594,7 @@ class MainActivity : AppCompatActivity() {
                         if (data.mediaType.equals("image")) {
                             mediaType = data.mediaType
                             sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
-                            imageToDiplay = if (flag == 9999) data.url else data.hdurl
+                            imageToDiplay = if (flag == 9999) data.url else data.url //data.hdurl (for high-res images)
                             imageLoader.displayImage(imageToDiplay,
                                 image,
                                 options,
@@ -889,16 +903,17 @@ class MainActivity : AppCompatActivity() {
         if (sheetBehavior!!.state == BottomSheetBehavior.STATE_HIDDEN || sheetBehavior!!.state == BottomSheetBehavior.STATE_EXPANDED) {
             backToNormalFunc()
             adCheck = 0
-        } else {
-            if (doubleBackToExitPressedOnce) {
+        } else
+//        {
+//            if (doubleBackToExitPressedOnce) {
                 super.onBackPressed()
-                return
-            }
-            doubleBackToExitPressedOnce = true
-            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
-            Handler()
-                .postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
-        }
+//                return
+//            }
+//            doubleBackToExitPressedOnce = true
+//            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
+//            Handler()
+//                .postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+//        }
     }
 
     private fun hasNetwork(context: Context): Boolean? {

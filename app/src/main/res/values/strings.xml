@@ -23,12 +23,12 @@
     <string name="network_issue">Network issue</string>
     <string name="server_issue">Server Issue</string>
     <string name="welcome_text">Welcome!</string>
-    <string name="you_can_swipe_right_to_show_next_day_s_photo">You can swipe left to right to show previous day\'s photo</string>
-    <string name="you_can_swipe_left_to_show_previous_day_s_photo">You can swipe right to left to show next day\'s photo</string>
+    <string name="you_can_swipe_right_to_show_next_day_s_photo">You can swipe left to right to show previous day\'s photo.</string>
+    <string name="you_can_swipe_left_to_show_previous_day_s_photo">You can swipe right to left to show next day\'s photo.</string>
     <string name="no_network">No Network!</string>
     <string name="pref_previously_started">already_done</string>
     <string name="change_dates_using_this_button_nto_see_photos_of_other_dates">Change dates using this button to see more photos.</string>
-    <string name="use_this_button_to_zoom_in_out_nthe_current_image">Use this button to zoom in/out the current image</string>
+    <string name="use_this_button_to_zoom_in_out_nthe_current_image">Use this button to zoom in/out the current image. \n\nOr use this button to play any videos.</string>
     <string name="enjoy_and_please_rate_this_app_on_play_store">Enjoy and please rate this app on play store!\n\nThank You!</string>
     <string-array name="spinner">
         <item>English</item>
