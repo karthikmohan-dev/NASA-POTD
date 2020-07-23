@@ -33,14 +33,19 @@
     <string name="enjoy_and_please_rate_this_app_on_play_store">Enjoy and please rate this app on play store!\n\nDeveloped by Karthik Mohan\n\nThank You!</string>
     <string name="pinch_to_zoom_in_out">Pinch to zoom in/out.</string>
     <string name="zoom">Zoom</string>
+    <string name="default_notification_channel_id">default_channel</string>
+    <string name="default_notification_channel_name">default_channel</string>
     <string-array name="spinner">
         <item>English</item>
-        <item>Hindi</item>
-        <item>Tamil</item>
-        <item>Telegu</item>
-        <item>Malayalam</item>
-        <item>Marathi</item>
-        <item>Bengali</item>
+        <item>हिन्दी</item>
+        <item>தமிழ்</item>
+        <item>తెలుగు</item>
+        <item>മലയാളം</item>
+        <item>मराठी</item>
+        <item>বাংলা</item>
+        <item>ಕನ್ನಡ</item>
+        <item>ગુજરાતી</item>
+        <item>ਪੰਜਾਬੀ</item>
     </string-array>
 
 

@@ -4,6 +4,8 @@ package com.karthik.nasapotd
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -31,6 +33,13 @@ import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.ktx.get
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.karthik.nasapotd.api.DataApi
 import com.karthik.nasapotd.api.DataApi.Companion.trans_api_key
 import com.karthik.nasapotd.model.DataModel
@@ -63,6 +72,8 @@ import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
+    private lateinit var remoteConfig: FirebaseRemoteConfig
     private var transFlag: Int = 0
     private var call1: Call<DataApi.TransModel>? = null
     private var descText: String? = null
@@ -96,8 +107,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        preinit()
+    }
+
+    private fun preinit() {
         if (hasNetwork(this)!!) {
+            initfirebase()
             init()
+            initRemoteConfig()
             initblur()
             initoptions()
             fetchData()
@@ -107,16 +124,86 @@ class MainActivity : AppCompatActivity() {
         {
             val builder = AlertDialog.Builder(this)
             builder.setTitle("No Internet Available!")
-            builder.setMessage("Sorry! No Internet Available. Try Again Later")
+            builder.setMessage("Sorry! No Internet Available. Switch on the internet and press Refresh or Try Again Later")
             builder.setIcon(android.R.drawable.ic_dialog_alert)
             builder.setPositiveButton("OK"){ _, _ ->
                 finish()
+            }
+            builder.setNeutralButton("Refresh"){ _, _ ->
+                preinit()
             }
             val alertDialog: AlertDialog = builder.create()
             alertDialog.setCancelable(false)
             alertDialog.show()
             Toast.makeText(this@MainActivity, getString(R.string.no_network), Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun initfirebase() {
+        firebaseAnalytics = Firebase.analytics
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            val channelId = getString(R.string.default_notification_channel_id)
+            val channelName = getString(R.string.default_notification_channel_name)
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager?.createNotificationChannel(
+                NotificationChannel(channelId,
+                channelName, NotificationManager.IMPORTANCE_LOW)
+            )
+        }
+
+        // If a notification message is tapped, any data accompanying the notification
+        // message is available in the intent extras. In this sample the launcher
+        // intent is fired when the notification is tapped, so any accompanying data would
+        // be handled here. If you want a different intent fired, set the click_action
+        // field of the notification message to the desired intent. The launcher intent
+        // is used when no click_action is specified.
+        //
+        // Handle possible data accompanying notification message.
+        // [START handle_data_extras]
+        intent.extras?.let {
+            for (key in it.keySet()) {
+                val value = intent.extras?.get(key)
+                Log.d("TAG", "Key: $key Value: $value")
+            }
+        }
+    }
+
+    private fun initRemoteConfig() {
+        remoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 0
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+        remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
+        remoteConfig.fetchAndActivate()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val updated = task.result
+                    Log.d("TAG", "Config params updated: $updated")
+                    //Toast.makeText(this, "Fetch and activate succeeded", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.d("TAG", "Config params updated: Not Updated!")
+                    //Toast.makeText(this, "Fetch failed", Toast.LENGTH_SHORT).show()
+                }
+                checktranslation()
+            }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        initRemoteConfig()
+    }
+
+    private fun checktranslation() {
+        // [START get_config_values]
+        val enableTranslation = remoteConfig["enable_translation"].asString()
+        //Toast.makeText(this, enableTranslation, Toast.LENGTH_SHORT).show()
+        // [END get_config_values]
+       if(enableTranslation=="true")
+           spinner_language_to.visibility = View.VISIBLE
+        else
+           spinner_language_to.visibility = View.INVISIBLE
     }
 
     private fun init() {
@@ -245,7 +332,8 @@ class MainActivity : AppCompatActivity() {
                 when (position) {
                     0 -> {
                         if(transFlag!=0)
-                        getTranslation("en")
+                        //getTranslation("en")
+                            description.text = descText
                     }
                     1 -> {
                         transFlag = position
@@ -259,10 +347,10 @@ class MainActivity : AppCompatActivity() {
                         transFlag = position
                         getTranslation("te")
                     }
-                    4 -> {
-                        transFlag = position
-                        getTranslation("ml")
-                    }
+//                    4 -> {
+//                        transFlag = position
+//                        getTranslation("ml")
+//                    }
                     5 -> {
                         transFlag = position
                         getTranslation("mr")
@@ -270,6 +358,14 @@ class MainActivity : AppCompatActivity() {
                     6 -> {
                         transFlag = position
                         getTranslation("bn")
+                    }
+                    7 -> {
+                        transFlag = position
+                        getTranslation("kn")
+                    }
+                    8 -> {
+                        transFlag = position
+                        getTranslation("gu")
                     }
                     else -> {
                         Toast.makeText(applicationContext, "This and other languages will be added soon.", Toast.LENGTH_LONG)
@@ -394,6 +490,13 @@ class MainActivity : AppCompatActivity() {
                     userchosenyear = c.get(Calendar.YEAR)
                     userchosenmonth = c.get(Calendar.MONTH) + 1
                     userchosenday = c.get(Calendar.DAY_OF_MONTH)
+                }
+            }
+
+            override fun onSwipeTop() {
+                if ((sheetBehavior as BottomSheetBehavior<*>).state == BottomSheetBehavior.STATE_COLLAPSED) {
+                    (sheetBehavior as BottomSheetBehavior<*>).state =
+                        BottomSheetBehavior.STATE_EXPANDED
                 }
             }
         })
