@@ -72,6 +72,7 @@ import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity() {
 
+    private var hd: Boolean = false
     private lateinit var firebaseAnalytics: FirebaseAnalytics
     private lateinit var remoteConfig: FirebaseRemoteConfig
     private var transFlag: Int = 0
@@ -186,7 +187,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d("TAG", "Config params updated: Not Updated!")
                     //Toast.makeText(this, "Fetch failed", Toast.LENGTH_SHORT).show()
                 }
-                checktranslation()
+                checkvar()
             }
     }
 
@@ -195,10 +196,12 @@ class MainActivity : AppCompatActivity() {
         initRemoteConfig()
     }
 
-    private fun checktranslation() {
+    private fun checkvar() {
         // [START get_config_values]
         val enableTranslation = remoteConfig["enable_translation"].asString()
-        //Toast.makeText(this, enableTranslation, Toast.LENGTH_SHORT).show()
+        val hdSd = remoteConfig["hd_sd"].asString()
+        hd = hdSd=="hd"
+        Log.e("TAG", hd.toString())
         // [END get_config_values]
        if(enableTranslation=="true")
            spinner_language_to.visibility = View.VISIBLE
@@ -725,7 +728,13 @@ class MainActivity : AppCompatActivity() {
                         if (data.mediaType.equals("image")) {
                             mediaType = data.mediaType
                             sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
-                            imageToDiplay = if (flag == 9999) data.url else data.url //data.hdurl (for high-res images)
+                            imageToDiplay = if (flag == 9999) data.url else {
+                                if(hd)
+                                    data.hdurl
+                                else
+                                    data.url
+                                //data.hdurl (for high-res images)
+                            }
                             imageLoader.displayImage(imageToDiplay,
                                 image,
                                 options,

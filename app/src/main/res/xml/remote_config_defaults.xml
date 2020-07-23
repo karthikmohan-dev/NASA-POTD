@@ -5,5 +5,9 @@
         <key>enable_translation</key>
         <value>false</value>
     </entry>
+    <entry>
+        <key>hd_sd</key>
+        <value>sd</value>
+    </entry>
 </defaultsMap>
     <!-- END xml_defaults -->
