@@ -823,7 +823,8 @@ class MainActivity : AppCompatActivity() {
                                     }
                                     data.url.contains("vimeo") -> {
                                         Log.e("Vimeo", "false")
-                                        imgUrl = getvimeothumbnail(id)
+                                        //imgUrl = getvimeothumbnail(id)
+                                        getvimeothumbnail(id)
                                         flagCheck = 2
                                     }
                                     else -> {
