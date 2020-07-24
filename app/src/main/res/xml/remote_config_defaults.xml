@@ -9,5 +9,9 @@
         <key>hd_sd</key>
         <value>sd</value>
     </entry>
+    <entry>
+        <key>rewards_enabled</key>
+        <value>false</value>
+    </entry>
 </defaultsMap>
     <!-- END xml_defaults -->

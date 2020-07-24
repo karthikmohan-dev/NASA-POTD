@@ -44,5 +44,6 @@ interface DataApi {
         const val api_key = "hhLOEStXTcfad68lAeqOkEoVqhzNhTCyaPp5kaaO"
         const val trans_api_key = "trnsl.1.1.20170425T085917Z.580fec9ed721d387.9caf5bd2514ca1581b95de321974dce826ef5064"
         const val ad_id = "ca-app-pub-2747296886141297/7705354849"
+        const val banner_id = "ca-app-pub-2747296886141297/8439867920"
     }
 }

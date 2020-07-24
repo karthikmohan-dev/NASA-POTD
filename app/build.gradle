@@ -11,15 +11,10 @@ android {
         applicationId "com.karthik.nasapotd"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 4
-        versionName "1.3"
+        versionCode 6
+        versionName "1.3.2"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        manifestPlaceholders = [
-                pushbots_app_id               : "5f193d8ba0a0ce3ae12ffb56",
-                pushbots_loglevel             : "DEBUG",
-                google_sender_id              : "448522684638"
-        ]
     }
 
     buildTypes {
@@ -55,7 +50,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
@@ -81,4 +76,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx:17.4.4'
     implementation 'com.google.firebase:firebase-messaging:20.2.3'
     implementation 'android.arch.work:work-runtime:1.0.1'
+    implementation 'com.google.firebase:firebase-inappmessaging-display:19.1.0'
 }
