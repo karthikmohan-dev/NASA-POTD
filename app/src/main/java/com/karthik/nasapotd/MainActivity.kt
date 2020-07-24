@@ -72,7 +72,6 @@ import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity() {
 
-    private var rewardsOnline: String = "false"
     private var hd: Boolean = false
     private lateinit var firebaseAnalytics: FirebaseAnalytics
     private lateinit var remoteConfig: FirebaseRemoteConfig
@@ -200,15 +199,15 @@ class MainActivity : AppCompatActivity() {
     private fun checkvar() {
         // [START get_config_values]
         val enableTranslation = remoteConfig["enable_translation"].asString()
-        rewardsOnline = remoteConfig["rewards_enabled"].asString()
+        //rewardsOnline = remoteConfig["rewards_enabled"].asString()
         val hdSd = remoteConfig["hd_sd"].asString()
         // [END get_config_values]
         hd = hdSd=="hd"
-        Log.e("TAG", hd.toString())
-        if(rewardsOnline=="true")
-            fab_rewards.visibility = View.VISIBLE
-        else
-            fab_rewards.visibility = View.INVISIBLE
+//        Log.e("TAG", hd.toString())
+//        if(rewardsOnline=="true")
+//            fab_rewards.visibility = View.VISIBLE
+//        else
+//            fab_rewards.visibility = View.INVISIBLE
        if(enableTranslation=="true")
            spinner_language_to.visibility = View.VISIBLE
         else
@@ -255,14 +254,14 @@ class MainActivity : AppCompatActivity() {
                     }
                     BottomSheetBehavior.STATE_EXPANDED -> {
                         fab_calendar.visibility = View.INVISIBLE
-                        fab_rewards.visibility = View.INVISIBLE
+                        //fab_rewards.visibility = View.INVISIBLE
                     }
                     BottomSheetBehavior.STATE_COLLAPSED -> {
                         fab_calendar.visibility = View.VISIBLE
-                        if(rewardsOnline=="true")
-                            fab_rewards.visibility = View.VISIBLE
-                        else
-                            fab_rewards.visibility = View.INVISIBLE
+//                        if(rewardsOnline=="true")
+//                            fab_rewards.visibility = View.VISIBLE
+//                        else
+//                            fab_rewards.visibility = View.INVISIBLE
                         mScrollView.smoothScrollTo(0, description.top)
                     }
                 }
@@ -329,11 +328,11 @@ class MainActivity : AppCompatActivity() {
                 initchooser()
             }
         }
-        fab_rewards.setOnLongClickListener {
-            Toast.makeText(this@MainActivity, "Rewards", Toast.LENGTH_SHORT).show()
-            true
-        }
-        fab_rewards.setOnClickListener { rewardsfun() }
+//        fab_rewards.setOnLongClickListener {
+//            Toast.makeText(this@MainActivity, "Rewards", Toast.LENGTH_SHORT).show()
+//            true
+//        }
+//        fab_rewards.setOnClickListener { rewardsfun() }
         fab_calendar.setOnLongClickListener {
             Toast.makeText(this@MainActivity, "Pick Date", Toast.LENGTH_SHORT).show()
             true
@@ -414,9 +413,6 @@ class MainActivity : AppCompatActivity() {
                     .show()
             }
         }
-    }
-
-    private fun rewardsfun() {
     }
 
     private fun initshowcase() {
@@ -606,7 +602,7 @@ class MainActivity : AppCompatActivity() {
         fab_lens.setImageDrawable(resources.getDrawable(R.drawable.zoom_off))
         blurView.visibility = View.GONE
         fab_calendar.visibility = View.GONE
-        fab_rewards.visibility = View.GONE
+//        fab_rewards.visibility = View.GONE
     }
 
     private fun backToNormalFunc() {
@@ -618,10 +614,10 @@ class MainActivity : AppCompatActivity() {
         image.reset(true)
         blurView.visibility = View.VISIBLE
         fab_calendar.visibility = View.VISIBLE
-        if(rewardsOnline=="true")
-            fab_rewards.visibility = View.VISIBLE
-        else
-            fab_rewards.visibility = View.INVISIBLE
+//        if(rewardsOnline=="true")
+//            fab_rewards.visibility = View.VISIBLE
+//        else
+//            fab_rewards.visibility = View.INVISIBLE
         if (mediaType == "video") {
             image.scaleType = ImageView.ScaleType.FIT_CENTER
             fab_lens.setImageDrawable(resources.getDrawable(R.drawable.play_1))
