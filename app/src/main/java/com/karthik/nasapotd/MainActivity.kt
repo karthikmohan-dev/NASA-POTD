@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
     var sheetBehavior: BottomSheetBehavior<*>? = null
     private var videoId: String? = null
     private var mediaType: String? = null
-    private var flagCheck = 0
+    private var flagWhichVideoCheck = 0
     private var i: Intent? = null
     var vimeoImg: String? = null
     private var imgUrl: String? = null
@@ -458,6 +458,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initshowcase1() {
+        if (mediaType == "image")
         TutoShowcase.from(this)
             .setContentView(R.layout.tutorial_center_4)
             .setListener {}
@@ -540,7 +541,7 @@ class MainActivity : AppCompatActivity() {
     private fun initchooser()
     {
         if (mediaType == "video") {
-            when (flagCheck) {
+            when (flagWhichVideoCheck) {
                 1 -> {
                     i = Intent(this@MainActivity, VideoActivity1::class.java)
                     i!!.putExtra("video_id", videoId)
@@ -748,6 +749,7 @@ class MainActivity : AppCompatActivity() {
         dialog.setCancelable(false)
         dialog.show()
         call!!.enqueue(object : Callback<DataModel?> {
+            @SuppressLint("SimpleDateFormat")
             override fun onResponse(
                 call: Call<DataModel?>,
                 response: Response<DataModel?>
@@ -762,150 +764,171 @@ class MainActivity : AppCompatActivity() {
                     }
                     if (data != null) {
                         displayDate = data.date
-                        if (data.mediaType.equals("image")) {
-                            mediaType = data.mediaType
-                            sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
-                            imageToDiplay = if (flag == 9999) data.url else {
-                                if(hd)
-                                    data.hdurl
-                                else
-                                    data.url
-                                //data.hdurl (for high-res images)
+                        when {
+                            data.mediaType.equals("image") -> {
+                                mediaType = data.mediaType
+                                sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+                                imageToDiplay = if (flag == 9999) data.url else {
+                                    if(hd)
+                                        data.hdurl
+                                    else
+                                        data.url
+                                    //data.hdurl (for high-res images)
+                                }
+                                imageLoader.displayImage(imageToDiplay,
+                                    image,
+                                    options,
+                                    object : ImageLoadingListener {
+                                        override fun onLoadingStarted(
+                                            imageUri: String,
+                                            view: View
+                                        ) {
+                                        }
+
+                                        override fun onLoadingFailed(
+                                            imageUri: String,
+                                            view: View,
+                                            failReason: FailReason
+                                        ) {
+                                            if (flag == 9999) {
+                                                Log.e("TAg", "failed")
+                                                dialog.dismiss()
+                                                Toast.makeText(
+                                                    this@MainActivity,
+                                                    R.string.server_issue,
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            } else {
+                                                dialog.dismiss()
+                                                flag = 9999
+                                                fetchData()
+                                            }
+                                        }
+
+                                        override fun onLoadingComplete(
+                                            imageUri: String,
+                                            view: View,
+                                            loadedImage: Bitmap
+                                        ) {
+                                            fab_lens.setImageDrawable(resources.getDrawable(R.drawable.zoom_on))
+                                            date_view.text = data.date
+                                            description.text = data.explanation
+                                            descText = data.explanation
+                                            title_view.text = data.title
+                                            image.isZoomable = false
+                                            image.isTranslatable = false
+                                            image.autoCenter = false
+                                            image.reset(true)
+                                            image.scaleType = ImageView.ScaleType.CENTER_CROP
+                                            dialog.dismiss()
+                                            flag = 1
+                                            spinner_language_to.setSelection(0, true)
+                                            transFlag = 0
+                                            val prefs: SharedPreferences =
+                                                PreferenceManager.getDefaultSharedPreferences(
+                                                    baseContext
+                                                )
+                                            val previouslyStarted: Boolean =
+                                                prefs.getBoolean(
+                                                    getString(R.string.pref_previously_started),
+                                                    false
+                                                )
+                                            if (!previouslyStarted) {
+                                                val edit: SharedPreferences.Editor = prefs.edit()
+                                                edit.putBoolean(
+                                                    getString(R.string.pref_previously_started),
+                                                    java.lang.Boolean.TRUE
+                                                )
+                                                edit.apply()
+                                                initshowcase()
+                                            }
+                                        }
+
+                                        override fun onLoadingCancelled(
+                                            imageUri: String,
+                                            view: View
+                                        ) {
+                                            dialog.dismiss()
+                                        }
+                                    }
+                                ) { _: String?, _: View?, _: Int, _: Int -> }
                             }
-                            imageLoader.displayImage(imageToDiplay,
-                                image,
-                                options,
-                                object : ImageLoadingListener {
-                                    override fun onLoadingStarted(
-                                        imageUri: String,
-                                        view: View
-                                    ) {
-                                    }
-                                    override fun onLoadingFailed(
-                                        imageUri: String,
-                                        view: View,
-                                        failReason: FailReason
-                                    ) {
-                                        if (flag == 9999) {
-                                            Log.e("TAg", "failed")
+                            data.mediaType.equals("video") -> {
+                                mediaType = data.mediaType
+                                fab_lens.setImageDrawable(resources.getDrawable(R.drawable.play_1))
+                                date_view.text = data.date
+                                sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+                                description.text = data.explanation
+                                descText = data.explanation
+                                title_view.text = data.title
+                                spinner_language_to.setSelection(0, true)
+                                transFlag = 0
+                                try {
+                                    Log.e("URL is->", "" + data.url)
+                                    val id: String = getVideoId(data.url).toString()
+                                    Log.e("URL is->", "" + id)
+                                    videoId = id
+                                    when {
+                                        data.url!!.contains("youtu") -> {
+                                            Log.e("YT", "true")
+                                            imgUrl = "http://img.youtube.com/vi/$id/0.jpg"
+                                            flagWhichVideoCheck = 1
+                                            videoThumbnailLoader(imgUrl!!)
+                                        }
+                                        data.url.contains("vimeo") -> {
+                                            Log.e("Vimeo", "false")
+                                            //imgUrl = getvimeothumbnail(id)
+                                            getvimeothumbnail(id)
+                                            flagWhichVideoCheck = 2
+                                        }
+                                        else -> {
+                                            image.setImageDrawable(resources.getDrawable(R.drawable.loading))
+                                            image.isZoomable = false
+                                            image.isTranslatable = false
+                                            image.autoCenter = false
+                                            image.reset(true)
+                                            image.scaleType = ImageView.ScaleType.FIT_CENTER
+                                            vidUrl = data.url
                                             dialog.dismiss()
-                                            Toast.makeText(
-                                                this@MainActivity,
-                                                R.string.server_issue,
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        } else {
-                                            dialog.dismiss()
-                                            flag = 9999
-                                            fetchData()
+                                            flagWhichVideoCheck = 3
+                                            val prefs: SharedPreferences =
+                                                PreferenceManager.getDefaultSharedPreferences(
+                                                    baseContext
+                                                )
+                                            val previouslyStarted: Boolean =
+                                                prefs.getBoolean(
+                                                    getString(R.string.pref_previously_started),
+                                                    false
+                                                )
+                                            if (!previouslyStarted) {
+                                                val edit: SharedPreferences.Editor = prefs.edit()
+                                                edit.putBoolean(
+                                                    getString(R.string.pref_previously_started),
+                                                    java.lang.Boolean.TRUE
+                                                )
+                                                edit.apply()
+                                                initshowcase()
+                                            }
                                         }
                                     }
-                                    override fun onLoadingComplete(
-                                        imageUri: String,
-                                        view: View,
-                                        loadedImage: Bitmap
-                                    ) {
-                                        fab_lens.setImageDrawable(resources.getDrawable(R.drawable.zoom_on))
-                                        date_view.text = data.date
-                                        description.text = data.explanation
-                                        descText = data.explanation
-                                        title_view.text = data.title
-                                        image.isZoomable = false
-                                        image.isTranslatable = false
-                                        image.autoCenter = false
-                                        image.reset(true)
-                                        image.scaleType = ImageView.ScaleType.CENTER_CROP
-                                        dialog.dismiss()
-                                        flag = 1
-                                        spinner_language_to.setSelection(0, true)
-                                        transFlag = 0
-                                        val prefs: SharedPreferences =
-                                            PreferenceManager.getDefaultSharedPreferences(
-                                                baseContext
-                                            )
-                                        val previouslyStarted: Boolean =
-                                            prefs.getBoolean(
-                                                getString(R.string.pref_previously_started),
-                                                false
-                                            )
-                                        if (!previouslyStarted) {
-                                            val edit: SharedPreferences.Editor = prefs.edit()
-                                            edit.putBoolean(
-                                                getString(R.string.pref_previously_started),
-                                                java.lang.Boolean.TRUE
-                                            )
-                                            edit.apply()
-                                            initshowcase()
-                                        }
-                                    }
-                                    override fun onLoadingCancelled(
-                                        imageUri: String,
-                                        view: View
-                                    ) {
-                                        dialog.dismiss()
-                                    }
+                                } catch (throwable: Throwable) {
+                                    dialog.dismiss()
+                                    throwable.printStackTrace()
                                 }
-                            ) { _: String?, _: View?, _: Int, _: Int -> }
-                        } else if (data.mediaType.equals("video")) {
-                            mediaType = data.mediaType
-                            fab_lens.setImageDrawable(resources.getDrawable(R.drawable.play_1))
-                            date_view.text = data.date
-                            sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
-                            description.text = data.explanation
-                            title_view!!.text = data.title
-                            spinner_language_to.setSelection(0, true)
-                            transFlag = 0
-                            try {
-                                Log.e("URL is->", "" + data.url)
-                                val id: String = getVideoId(data.url).toString()
-                                Log.e("URL is->", "" + id)
-                                videoId = id
-                                when {
-                                    data.url!!.contains("youtu") -> {
-                                        Log.e("YT", "true")
-                                        imgUrl = "http://img.youtube.com/vi/$id/0.jpg"
-                                        flagCheck = 1
-                                        videoThumbnailLoader(imgUrl!!)
-                                    }
-                                    data.url.contains("vimeo") -> {
-                                        Log.e("Vimeo", "false")
-                                        //imgUrl = getvimeothumbnail(id)
-                                        getvimeothumbnail(id)
-                                        flagCheck = 2
-                                    }
-                                    else -> {
-                                        image.setImageDrawable(resources.getDrawable(R.drawable.loading))
-                                        image.isZoomable = false
-                                        image.isTranslatable = false
-                                        image.autoCenter = false
-                                        image.reset(true)
-                                        image.scaleType = ImageView.ScaleType.FIT_CENTER
-                                        vidUrl = data.url
-                                        dialog.dismiss()
-                                        flagCheck = 3
-                                        val prefs: SharedPreferences =
-                                            PreferenceManager.getDefaultSharedPreferences(
-                                                baseContext
-                                            )
-                                        val previouslyStarted: Boolean =
-                                            prefs.getBoolean(
-                                                getString(R.string.pref_previously_started),
-                                                false
-                                            )
-                                        if (!previouslyStarted) {
-                                            val edit: SharedPreferences.Editor = prefs.edit()
-                                            edit.putBoolean(
-                                                getString(R.string.pref_previously_started),
-                                                java.lang.Boolean.TRUE
-                                            )
-                                            edit.apply()
-                                            initshowcase()
-                                        }
-                                    }
+                            }
+                            else -> {
+                                val builder = AlertDialog.Builder(this@MainActivity)
+                                builder.setTitle("Data Not Available!")
+                                builder.setMessage("Sorry! Data is not available on the selected date. Please try some other date.")
+                                builder.setIcon(android.R.drawable.ic_dialog_alert)
+                                builder.setPositiveButton("OK"){ dialog1, _ ->
+                                    dialog1.cancel()
                                 }
-                            } catch (throwable: Throwable) {
+                                val alertDialog: AlertDialog = builder.create()
+                                alertDialog.setCancelable(true)
+                                alertDialog.show()
+
                                 dialog.dismiss()
-                                throwable.printStackTrace()
                             }
                         }
                     }
