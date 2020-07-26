@@ -33,3 +33,33 @@ Note: The Astronomy Picture of the Day (APOD) is based upon work supported by NA
 * Downloading/Sharing the pictures.
 * Setting as Wallpaper
 * More Intuitive UI
+
+https://play.google.com/store/apps/details?id=com.karthik.nasapotd
+
+NASA - APOD (Astronomical Picture of the Day)
+
+Discover the cosmos!
+NASA - APOD app lets you explore the cosmos with NASA's Astronomy Picture of the Day (APOD) service. NASA publishes a new image or video everyday related to astronomy for APOD, along with comprehensive documentation about the featured image.
+
+Please do review this app on playstore
+Support me if you like my work: https://paypal.me/karthikmohan06
+My personal Repo: https://github.com/karthikmohan
+
+-- Features
+1. The whole project is Kotlin based.
+2. Compatible with Android 4.2 and up.
+3. Fluid Materialistic Design.
+4. High Resolution and Standard Resolution Pictures Available.
+5. Easily navigate to view featured picture of any day since 1995.
+6. Detailed information of featured images.
+7. Features both images and videos (both playable in the app itself).
+8. Support for different Indian Languages.
+9. Gesture Navigation Support.
+
+
+-- Upcoming Features
+1. Downloading/Sharing the pictures.
+2. Setting as Wallpaper.
+3. More Intuitive UI/UX.
+4. Reward Feature for the users.
+4. Support for IOS app coming soon.
