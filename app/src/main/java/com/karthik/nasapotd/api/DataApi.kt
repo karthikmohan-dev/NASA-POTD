@@ -41,8 +41,8 @@ interface DataApi {
     }
 
     companion object {
-        const val api_key = "DEMO_KEY"
-        const val trans_api_key = "**yandex_translation_api**"
-        const val ad_id = "**ad_id**"
+        const val api_key = "hhLOEStXTcfad68lAeqOkEoVqhzNhTCyaPp5kaaO"
+        const val trans_api_key = "trnsl.1.1.20170425T085917Z.580fec9ed721d387.9caf5bd2514ca1581b95de321974dce826ef5064"
+        const val ad_id = "ca-app-pub-2747296886141297/7705354849"
     }
 }

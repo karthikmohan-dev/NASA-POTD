@@ -35,6 +35,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.get
@@ -72,6 +77,7 @@ import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity() {
 
+    val database = Firebase.database
     private var hd: Boolean = false
     private lateinit var firebaseAnalytics: FirebaseAnalytics
     private lateinit var remoteConfig: FirebaseRemoteConfig
@@ -203,11 +209,7 @@ class MainActivity : AppCompatActivity() {
         val hdSd = remoteConfig["hd_sd"].asString()
         // [END get_config_values]
         hd = hdSd=="hd"
-//        Log.e("TAG", hd.toString())
-//        if(rewardsOnline=="true")
-//            fab_rewards.visibility = View.VISIBLE
-//        else
-//            fab_rewards.visibility = View.INVISIBLE
+//      Log.e("TAG", hd.toString())
        if(enableTranslation=="true")
            spinner_language_to.visibility = View.VISIBLE
         else
@@ -254,14 +256,11 @@ class MainActivity : AppCompatActivity() {
                     }
                     BottomSheetBehavior.STATE_EXPANDED -> {
                         fab_calendar.visibility = View.INVISIBLE
-                        //fab_rewards.visibility = View.INVISIBLE
+                        counter_fab.visibility = View.INVISIBLE
                     }
                     BottomSheetBehavior.STATE_COLLAPSED -> {
                         fab_calendar.visibility = View.VISIBLE
-//                        if(rewardsOnline=="true")
-//                            fab_rewards.visibility = View.VISIBLE
-//                        else
-//                            fab_rewards.visibility = View.INVISIBLE
+                        counter_fab.visibility = View.VISIBLE
                         mScrollView.smoothScrollTo(0, description.top)
                     }
                 }
@@ -328,11 +327,17 @@ class MainActivity : AppCompatActivity() {
                 initchooser()
             }
         }
-//        fab_rewards.setOnLongClickListener {
-//            Toast.makeText(this@MainActivity, "Rewards", Toast.LENGTH_SHORT).show()
-//            true
-//        }
-//        fab_rewards.setOnClickListener { rewardsfun() }
+        counter_fab.setOnLongClickListener {
+            Toast.makeText(this@MainActivity, "Like This Picture", Toast.LENGTH_SHORT).show()
+            true
+        }
+        counter_fab.setOnClickListener {
+            counter_fab.increase()
+            val counter = counter_fab.count
+            val myRef = database.getReference(displayDate!!)
+            myRef.setValue(counter)
+            counter_fab.isEnabled = false
+        }
         fab_calendar.setOnLongClickListener {
             Toast.makeText(this@MainActivity, "Pick Date", Toast.LENGTH_SHORT).show()
             true
@@ -352,7 +357,7 @@ class MainActivity : AppCompatActivity() {
                     0 -> {
                         if(transFlag!=0)
                         //getTranslation("en")
-                            description.text = descText
+                        description.text = descText
                     }
                     1 -> {
                         transFlag = position
@@ -603,7 +608,7 @@ class MainActivity : AppCompatActivity() {
         fab_lens.setImageDrawable(resources.getDrawable(R.drawable.zoom_off))
         blurView.visibility = View.GONE
         fab_calendar.visibility = View.GONE
-//        fab_rewards.visibility = View.GONE
+        counter_fab.visibility = View.GONE
     }
 
     private fun backToNormalFunc() {
@@ -615,10 +620,7 @@ class MainActivity : AppCompatActivity() {
         image.reset(true)
         blurView.visibility = View.VISIBLE
         fab_calendar.visibility = View.VISIBLE
-//        if(rewardsOnline=="true")
-//            fab_rewards.visibility = View.VISIBLE
-//        else
-//            fab_rewards.visibility = View.INVISIBLE
+        counter_fab.visibility = View.VISIBLE
         if (mediaType == "video") {
             image.scaleType = ImageView.ScaleType.FIT_CENTER
             fab_lens.setImageDrawable(resources.getDrawable(R.drawable.play_1))
@@ -778,6 +780,25 @@ class MainActivity : AppCompatActivity() {
                     }
                     if (data != null) {
                         displayDate = data.date
+                        val myRef = database.getReference(displayDate!!)
+                        myRef.addListenerForSingleValueEvent(object :
+                            ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                // This method is called once with the initial value and again
+                                // whenever data at this location is updated.
+                                val value = dataSnapshot.getValue<Long>()
+                                Log.d("TAG", "Value is: $value")
+                                if(value!=null)
+                                    counter_fab.count = value.toInt()
+                                else
+                                    counter_fab.count = 1
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                                // Failed to read value
+                                Log.w("TAG", "Failed to read value.", error.toException())
+                            }
+                        })
+                        counter_fab.isEnabled = true
                         when {
                             data.mediaType.equals("image") -> {
                                 mediaType = data.mediaType

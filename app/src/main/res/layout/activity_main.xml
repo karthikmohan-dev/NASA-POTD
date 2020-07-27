@@ -8,18 +8,17 @@
 
     <include layout="@layout/content_main"/>
 
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="@dimen/fab_margin"-->
-<!--        android:src="@drawable/gift"-->
-<!--        android:id="@+id/fab_rewards"-->
-<!--        app:useCompatPadding="true"-->
-<!--        app:maxImageSize="50dp"-->
-<!--        app:layout_anchor="@+id/blurView"-->
-<!--        app:layout_anchorGravity="start|bottom"-->
-<!--        tools:targetApi="lollipop"-->
-<!--        android:visibility="invisible"/>-->
+    <com.andremion.counterfab.CounterFab
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:id="@+id/counter_fab"
+        app:useCompatPadding="true"
+        android:src="@drawable/heart"
+        app:layout_anchor="@+id/blurView"
+        app:layout_anchorGravity="start|bottom"
+        app:badgePosition="RightBottom"
+        tools:targetApi="lollipop"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
