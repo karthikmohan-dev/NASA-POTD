@@ -765,6 +765,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         else
                         {
+                            dialog.dismiss()
                             val c = Calendar.getInstance()
                             currYear = c[Calendar.YEAR]
                             currMonth = c[Calendar.MONTH]
@@ -980,8 +981,23 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+            @SuppressLint("SimpleDateFormat")
             override fun onFailure(call: Call<DataModel?>, t: Throwable) {
                 dialog.dismiss()
+                if(flag == 0)
+                {
+                    val c = Calendar.getInstance()
+                    currYear = c[Calendar.YEAR]
+                    currMonth = c[Calendar.MONTH]
+                    currDay = c[Calendar.DAY_OF_MONTH]
+                    val sdf = SimpleDateFormat("yyyy-MM-dd")
+                    c.time = sdf.parse("$currYear-$currMonth-$currDay")
+                    c.add(Calendar.DATE, -1) // number of days to sub
+                    maxDate1 = sdf.format(c.time)
+                    dateChosen = sdf.format(c.time)
+                    flag++
+                    fetchData()
+                }
                 Toast.makeText(this@MainActivity, R.string.network_issue, Toast.LENGTH_SHORT).show()
             }
         })
