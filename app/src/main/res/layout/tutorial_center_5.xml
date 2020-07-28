@@ -1,5 +1,4 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,21 +13,7 @@
         android:layout_gravity="center"
         android:orientation="vertical"
         android:gravity="center"
-        tools:ignore="UselessParent">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/welcome_text"
-            android:textColor="@android:color/white"
-            android:textSize="24sp"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:padding="10dp"
-            android:textAllCaps="true"
-            android:textStyle="bold"/>
-
+        tools:ignore="UseCompoundDrawables,UselessParent">
 
         <TextView
             android:layout_width="wrap_content"
@@ -36,10 +21,20 @@
             android:padding="10dp"
             android:gravity="center"
             android:textStyle="bold"
+            android:rotation="315"
             android:layout_gravity="center"
-            android:text="@string/enjoy_and_please_rate_this_app_on_play_store"
+            android:text="@string/pinch_to_zoom_in_out"
             android:textColor="@android:color/white"
             android:textSize="18sp"/>
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_margin="30dp"
+            android:layout_gravity="center"
+            tools:srcCompat="@drawable/zoom_on"
+            android:contentDescription="@string/zoom" />
 
     </LinearLayout>
 

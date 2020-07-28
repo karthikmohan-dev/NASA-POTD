@@ -13,8 +13,8 @@ android {
         applicationId "com.karthik.nasapotd"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 8
-        versionName "1.3.4"
+        versionCode 9
+        versionName "1.3.5"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

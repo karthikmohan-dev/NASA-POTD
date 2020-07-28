@@ -29,7 +29,6 @@
             android:textAllCaps="true"
             android:textStyle="bold"/>
 
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,7 +36,7 @@
             android:gravity="center"
             android:textStyle="bold"
             android:layout_gravity="center"
-            android:text="@string/enjoy_and_please_rate_this_app_on_play_store"
+            android:text="@string/like_this_picture_let_the_world_know_you_like_it"
             android:textColor="@android:color/white"
             android:textSize="18sp"/>
 

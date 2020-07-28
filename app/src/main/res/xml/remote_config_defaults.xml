@@ -10,7 +10,7 @@
         <value>sd</value>
     </entry>
     <entry>
-        <key>rewards_enabled</key>
+        <key>ads_enabled</key>
         <value>false</value>
     </entry>
 </defaultsMap>

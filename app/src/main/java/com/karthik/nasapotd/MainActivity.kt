@@ -27,10 +27,10 @@ import androidx.core.content.ContextCompat
 import cc.cloudist.acplibrary.ACProgressConstant
 import cc.cloudist.acplibrary.ACProgressFlower
 import com.github.florent37.tutoshowcase.TutoShowcase
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
+//import com.google.android.gms.ads.AdListener
+//import com.google.android.gms.ads.AdRequest
+//import com.google.android.gms.ads.InterstitialAd
+//import com.google.android.gms.ads.MobileAds
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -205,7 +205,6 @@ class MainActivity : AppCompatActivity() {
     private fun checkvar() {
         // [START get_config_values]
         val enableTranslation = remoteConfig["enable_translation"].asString()
-        //rewardsOnline = remoteConfig["rewards_enabled"].asString()
         val hdSd = remoteConfig["hd_sd"].asString()
         // [END get_config_values]
         hd = hdSd=="hd"
@@ -217,13 +216,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        MobileAds.initialize(this) {}
-        val mInterstitialAd = InterstitialAd(this)
-        //Test AD
-        //mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
-        //Personallized AD
-        mInterstitialAd.adUnitId = DataApi.ad_id
-        mInterstitialAd.loadAd(AdRequest.Builder().build())
+//        MobileAds.initialize(this) {}
+//        val mInterstitialAd = InterstitialAd(this)
+//        //Test AD
+//        //mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+//        //Personallized AD
+//        mInterstitialAd.adUnitId = DataApi.ad_id
+//        mInterstitialAd.loadAd(AdRequest.Builder().build())
         if (!isTaskRoot
             && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
             && intent.action != null
@@ -271,23 +270,23 @@ class MainActivity : AppCompatActivity() {
             ) {
             }
         })
-        mInterstitialAd.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                //mInterstitialAd.show()
-            }
-            override fun onAdFailedToLoad(errorCode: Int) {
-                Log.e("TAG", "AD Not Working")
-                initchooser()
-            }
-            override fun onAdClicked() {
-//                onAdClosed()
+//        mInterstitialAd.adListener = object : AdListener() {
+//            override fun onAdLoaded() {
+//                //mInterstitialAd.show()
+//            }
+//            override fun onAdFailedToLoad(errorCode: Int) {
+//                Log.e("TAG", "AD Not Working")
 //                initchooser()
-            }
-            override fun onAdClosed() {
-                initchooser()
-                mInterstitialAd.loadAd(AdRequest.Builder().build())
-            }
-        }
+//            }
+//            override fun onAdClicked() {
+////                onAdClosed()
+////                initchooser()
+//            }
+//            override fun onAdClosed() {
+//                initchooser()
+//                mInterstitialAd.loadAd(AdRequest.Builder().build())
+//            }
+//        }
         fab_lens.setOnLongClickListener {
             if (mediaType == "image") Toast.makeText(
                 this@MainActivity,
@@ -319,9 +318,9 @@ class MainActivity : AppCompatActivity() {
                 edit.apply()
                 initchooser()
                 initshowcase1()
-            }
-            else if (mInterstitialAd.isLoaded && adCheck == 0) {
-                mInterstitialAd.show()
+//            }
+//            else if (mInterstitialAd.isLoaded && adCheck == 0) {
+//                mInterstitialAd.show()
             } else {
                 Log.d("TAG", "The interstitial wasn't loaded yet.")
                 initchooser()
@@ -435,6 +434,14 @@ class MainActivity : AppCompatActivity() {
                                     .setListener {
                                         TutoShowcase.from(this)
                                             .setContentView(R.layout.tutorial_center_3)
+                                            .setListener {
+                                                TutoShowcase.from(this)
+                                                    .setContentView(R.layout.tutorial_center_4)
+                                                    .show()
+                                            }
+                                            .on(R.id.counter_fab)
+                                            .addCircle()
+                                            .withBorder()
                                             .show()
                                     }
                                     .on(R.id.fab_lens)
@@ -465,7 +472,7 @@ class MainActivity : AppCompatActivity() {
     private fun initshowcase1() {
         if (mediaType == "image")
         TutoShowcase.from(this)
-            .setContentView(R.layout.tutorial_center_4)
+            .setContentView(R.layout.tutorial_center_5)
             .setListener {}
             .setFitsSystemWindows(true)
             .on(R.id.imageView2)

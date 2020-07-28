@@ -35,6 +35,7 @@
     <string name="zoom">Zoom</string>
     <string name="default_notification_channel_id">default_channel</string>
     <string name="default_notification_channel_name">default_channel</string>
+    <string name="like_this_picture_let_the_world_know_you_like_it">Like this picture? Let the world know you like it.</string>
     <string-array name="spinner">
         <item>English</item>
         <item>हिन्दी</item>
