@@ -14,6 +14,7 @@
         android:layout_margin="@dimen/fab_margin"
         android:id="@+id/counter_fab"
         app:useCompatPadding="true"
+        app:maxImageSize="30dp"
         android:src="@drawable/heart"
         app:layout_anchor="@+id/blurView"
         app:layout_anchorGravity="start|bottom"

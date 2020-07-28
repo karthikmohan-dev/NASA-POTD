@@ -763,22 +763,6 @@ class MainActivity : AppCompatActivity() {
                             maxDate1 = data.date
                             flag++
                         }
-                        else
-                        {
-                            Toast.makeText(this@MainActivity, "If Case", Toast.LENGTH_SHORT).show()
-                            dialog.dismiss()
-                            val c = Calendar.getInstance()
-                            currYear = c[Calendar.YEAR]
-                            currMonth = c[Calendar.MONTH]
-                            currDay = c[Calendar.DAY_OF_MONTH]
-                            val sdf = SimpleDateFormat("yyyy-MM-dd")
-                            c.time = sdf.parse("$currYear-$currMonth-$currDay")
-                            c.add(Calendar.DATE, -1) // number of days to sub
-                            maxDate1 = sdf.format(c.time)
-                            dateChosen = sdf.format(c.time)
-                            flag++
-                            fetchData()
-                        }
                     }
                     if (data != null) {
                         displayDate = data.date
@@ -974,10 +958,9 @@ class MainActivity : AppCompatActivity() {
                     dialog.dismiss()
                     if(flag == 0)
                     {
-                        Toast.makeText(this@MainActivity, "Else Case", Toast.LENGTH_LONG).show()
                         val c = Calendar.getInstance()
                         currYear = c[Calendar.YEAR]
-                        currMonth = c[Calendar.MONTH]
+                        currMonth = c[Calendar.MONTH] + 1
                         currDay = c[Calendar.DAY_OF_MONTH]
                         val sdf = SimpleDateFormat("yyyy-MM-dd")
                         c.time = sdf.parse("$currYear-$currMonth-$currDay")
@@ -1018,21 +1001,6 @@ class MainActivity : AppCompatActivity() {
             @SuppressLint("SimpleDateFormat")
             override fun onFailure(call: Call<DataModel?>, t: Throwable) {
                 dialog.dismiss()
-                if(flag == 0)
-                {
-                    Toast.makeText(this@MainActivity, "Failure Case", Toast.LENGTH_LONG).show()
-                    val c = Calendar.getInstance()
-                    currYear = c[Calendar.YEAR]
-                    currMonth = c[Calendar.MONTH]
-                    currDay = c[Calendar.DAY_OF_MONTH]
-                    val sdf = SimpleDateFormat("yyyy-MM-dd")
-                    c.time = sdf.parse("$currYear-$currMonth-$currDay")
-                    c.add(Calendar.DATE, -1) // number of days to sub
-                    maxDate1 = sdf.format(c.time)
-                    dateChosen = sdf.format(c.time)
-                    flag++
-                    fetchData()
-                }
                 Toast.makeText(this@MainActivity, R.string.network_issue, Toast.LENGTH_SHORT).show()
             }
         })
