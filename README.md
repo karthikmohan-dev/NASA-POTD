@@ -42,6 +42,5 @@ My personal Repo: https://github.com/karthikmohan
 * More Intuitive UI
 
 ## Screenshots
-
 | ![Main view](screenshots/1.PNG)  | ![Image description](screenshots/2.PNG) | ![Video View](screenshots/3.PNG) |
 |:---:|:---:|:---:|
