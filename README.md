@@ -12,8 +12,8 @@
         <img src="https://img.shields.io/github/v/release/karthikmohan/NASA-POTD?style=for-the-badge" alt="Release Version"/></a>
 </p>  
 
-# NASA-APOD
-[NASA-AOPD] (https://play.google.com/store/apps/details?id=com.karthik.nasapotd) is an Android app that displays NASA's Astronomical Picture of the Day. 
+# NASA - APOD
+[NASA - APOD](https://play.google.com/store/apps/details?id=com.karthik.nasapotd) is an Android app that displays NASA's Astronomical Picture of the Day. 
 This app lets you explore the cosmos with NASA's Astronomy Picture of the Day (APOD) service. NASA publishes a new image or video everyday related to astronomy for APOD, along with comprehensive documentation about the featured image.
 
 Note: The Astronomy Picture of the Day (APOD) is based upon work supported by NASA under award No. 80NSSC17M0076. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Aeronautics and Space Administration.
@@ -43,5 +43,5 @@ My personal Repo: https://github.com/karthikmohan
 
 ## Screenshots
 
-| ![Main view](screenshots/1.png)  | ![Image description](screenshots/2.png) | ![Video View](screenshots/3.png) |
+| ![Main view](screenshots/1.PNG)  | ![Image description](screenshots/2.PNG) | ![Video View](screenshots/3.PNG) |
 |:---:|:---:|:---:|
