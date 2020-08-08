@@ -24,6 +24,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import cc.cloudist.acplibrary.ACProgressConstant
 import cc.cloudist.acplibrary.ACProgressFlower
 import com.github.florent37.tutoshowcase.TutoShowcase
@@ -370,10 +371,10 @@ class MainActivity : AppCompatActivity() {
                         transFlag = position
                         getTranslation("te")
                     }
-//                    4 -> {
-//                        transFlag = position
-//                        getTranslation("ml")
-//                    }
+                    4 -> {
+                        transFlag = position
+                        getTranslation("ml")
+                    }
                     5 -> {
                         transFlag = position
                         getTranslation("mr")
@@ -405,6 +406,34 @@ class MainActivity : AppCompatActivity() {
                     12 -> {
                         transFlag = position
                         getTranslation("de")
+                    }
+                    13 -> {
+                        transFlag = position
+                        getTranslation("sv")
+                    }
+                    14 -> {
+                        transFlag = position
+                        getTranslation("hr")
+                    }
+                    15 -> {
+                        transFlag = position
+                        getTranslation("ko")
+                    }
+                    16 -> {
+                        transFlag = position
+                        getTranslation("es")
+                    }
+                    17 -> {
+                        transFlag = position
+                        getTranslation("ru")
+                    }
+                    18 -> {
+                        transFlag = position
+                        getTranslation("pt")
+                    }
+                    19 -> {
+                        transFlag = position
+                        getTranslation("el")
                     }
                     else -> {
                         Toast.makeText(applicationContext, "This and other languages will be added soon.", Toast.LENGTH_LONG)
@@ -612,7 +641,7 @@ class MainActivity : AppCompatActivity() {
         image.isZoomable = true
         image.isTranslatable = true
         image.autoCenter = true
-        fab_lens.setImageDrawable(resources.getDrawable(R.drawable.zoom_off))
+        fab_lens.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.zoom_off, null))
         blurView.visibility = View.GONE
         fab_calendar.visibility = View.GONE
         counter_fab.visibility = View.GONE
@@ -630,10 +659,10 @@ class MainActivity : AppCompatActivity() {
         counter_fab.visibility = View.VISIBLE
         if (mediaType == "video") {
             image.scaleType = ImageView.ScaleType.FIT_CENTER
-            fab_lens.setImageDrawable(resources.getDrawable(R.drawable.play_1))
+            fab_lens.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.play_1, null))
         } else {
             image.scaleType = ImageView.ScaleType.CENTER_CROP
-            fab_lens.setImageDrawable(resources.getDrawable(R.drawable.zoom_on))
+            fab_lens.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.zoom_on, null))
         }
     }
 
@@ -774,7 +803,7 @@ class MainActivity : AppCompatActivity() {
                     if (data != null) {
                         displayDate = data.date
                         val myRef = database.getReference(displayDate!!)
-                        myRef.addListenerForSingleValueEvent(object :
+                        myRef.addValueEventListener(object :
                             ValueEventListener {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                 // This method is called once with the initial value and again
@@ -783,8 +812,10 @@ class MainActivity : AppCompatActivity() {
                                 Log.d("TAG", "Value is: $value")
                                 if(value!=null)
                                     counter_fab.count = value.toInt()
-                                else
+                                else {
                                     counter_fab.count = 1
+                                    myRef.setValue(1)
+                                }
                             }
                             override fun onCancelled(error: DatabaseError) {
                                 // Failed to read value
@@ -838,7 +869,7 @@ class MainActivity : AppCompatActivity() {
                                             view: View,
                                             loadedImage: Bitmap
                                         ) {
-                                            fab_lens.setImageDrawable(resources.getDrawable(R.drawable.zoom_on))
+                                            fab_lens.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.zoom_on, null))
                                             date_view.text = data.date
                                             description.text = data.explanation
                                             descText = data.explanation
@@ -883,7 +914,7 @@ class MainActivity : AppCompatActivity() {
                             }
                             data.mediaType.equals("video") -> {
                                 mediaType = data.mediaType
-                                fab_lens.setImageDrawable(resources.getDrawable(R.drawable.play_1))
+                                fab_lens.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.play_1, null))
                                 date_view.text = data.date
                                 sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
                                 description.text = data.explanation
@@ -910,7 +941,7 @@ class MainActivity : AppCompatActivity() {
                                             flagWhichVideoCheck = 2
                                         }
                                         else -> {
-                                            image.setImageDrawable(resources.getDrawable(R.drawable.loading))
+                                            image.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.loading, null))
                                             image.isZoomable = false
                                             image.isTranslatable = false
                                             image.autoCenter = false

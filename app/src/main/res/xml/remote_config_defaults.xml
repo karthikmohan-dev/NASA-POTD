@@ -9,9 +9,5 @@
         <key>hd_sd</key>
         <value>sd</value>
     </entry>
-    <entry>
-        <key>ads_enabled</key>
-        <value>false</value>
-    </entry>
 </defaultsMap>
     <!-- END xml_defaults -->
